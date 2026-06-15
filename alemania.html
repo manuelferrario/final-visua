@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
       --primary:          #0066cc;
@@ -173,6 +174,111 @@
     }
 
     @media (max-width: 640px) { .hero-inner { flex-direction: column-reverse; align-items: flex-start; } .hero-flag-wrap { width: 80px; } }
+
+    /* ── SCROLL VIZ LAYOUT ── */
+    .scroll-viz-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      align-items: start;
+      border-top: 1px solid var(--hairline);
+    }
+    .scroll-map-sticky {
+      position: sticky;
+      top: 92px;
+      height: calc(100vh - 92px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 32px;
+      gap: 14px;
+      background: var(--canvas);
+    }
+    .smap-header {
+      display: flex; flex-direction: column; align-items: flex-start;
+      width: 100%; max-width: 520px;
+    }
+    .smap-year {
+      font-family: var(--ff-d); font-size: clamp(36px,4vw,56px); font-weight: 700;
+      line-height: 1; color: var(--accent);
+    }
+    .smap-event {
+      font-family: var(--ff-t); font-size: 14px; color: var(--ink-muted-48);
+      margin-top: 4px;
+    }
+    #de-map { width: 100%; max-width: 520px; }
+    #de-map svg { display: block; width: 100%; height: auto; }
+    #de-map path { cursor: default; transition: fill 0.55s cubic-bezier(.25,.46,.45,.94); }
+    .smap-footer {
+      width: 100%; max-width: 520px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .smap-legend {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--ff-t); font-size: 11px; color: var(--ink-muted-48);
+    }
+    .smap-legend-bar {
+      width: 80px; height: 8px; border-radius: 4px;
+      background: linear-gradient(to right, #dce9f5, #08306b);
+    }
+    .smap-total {
+      font-family: var(--ff-t); font-size: 12px; color: var(--ink-muted-48);
+      text-align: right;
+    }
+    .smap-total strong {
+      font-family: var(--ff-d); font-size: 15px; color: var(--ink); display: block;
+    }
+    /* Scroll panels */
+    .scroll-panels {
+      border-left: 1px solid var(--hairline);
+      background: var(--canvas-parchment);
+    }
+    .spanel {
+      min-height: 100vh;
+      padding: 56px 36px;
+      display: flex; flex-direction: column; justify-content: center;
+      border-bottom: 1px solid var(--hairline);
+      opacity: 0.35;
+      transition: opacity 0.4s ease;
+    }
+    .spanel.active { opacity: 1; }
+    .spanel-year {
+      font-family: var(--ff-d); font-size: 48px; font-weight: 700;
+      line-height: 1; color: var(--accent); margin-bottom: 6px;
+    }
+    .spanel-event {
+      font-family: var(--ff-d); font-size: 16px; font-weight: 600;
+      color: var(--ink); margin-bottom: 16px;
+    }
+    .spanel-stat {
+      font-family: var(--ff-d); font-size: 13px; font-weight: 600;
+      color: var(--ink-muted-48); margin-bottom: 20px;
+      padding: 8px 12px; background: var(--canvas);
+      border-radius: 8px; border: 1px solid var(--hairline);
+      display: inline-block;
+    }
+    .spanel-body {
+      font-family: var(--ff-t); font-size: 14px; line-height: 1.65;
+      color: var(--ink-muted-48);
+    }
+    /* Tooltip */
+    #map-tooltip {
+      position: fixed; pointer-events: none; display: none;
+      background: #1d1d1f; color: #fff;
+      border-radius: 10px; padding: 10px 14px;
+      font-family: var(--ff-t); font-size: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+      z-index: 999; min-width: 140px;
+    }
+    #map-tooltip .tt-state { font-family: var(--ff-d); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    #map-tooltip .tt-val { color: #a0c4ff; font-weight: 600; }
+    @media (max-width: 900px) {
+      .scroll-viz-layout { grid-template-columns: 1fr; }
+      .scroll-map-sticky { position: relative; top: 0; height: auto; padding: 32px 20px 16px; }
+      .scroll-panels { border-left: none; border-top: 1px solid var(--hairline); }
+      .spanel { min-height: 70vh; }
+    }
   </style>
 </head>
 <body>
@@ -222,27 +328,84 @@
     </div>
   </section>
 
-  <!-- VIZ 01 -->
+  <!-- VIZ 01 — Mapa coroplético scroll-driven -->
   <div class="viz-section">
     <div class="viz-text">
       <p class="eyebrow">Visualización 01</p>
-      <h2 class="section-title">Flujos migratorios: asilo legal e inmigración irregular</h2>
-      <p class="section-body">La crisis de 2015–2016 llevó las solicitudes a cifras históricas. El gráfico combina solicitudes de asilo formales con estimaciones de inmigración irregular, mostrando la evolución anual y la composición por país de origen.</p>
+      <h2 class="section-title">Población extranjera residente por estado (1992–2023)</h2>
+      <p class="section-body">Scrolleá para ver cómo creció la población inmigrante en los 16 estados alemanes a lo largo de tres décadas. Cada frame es más oscuro: más residentes extranjeros.</p>
     </div>
-    <div class="flourish-container" id="fc-1">
-      <div class="flourish-scaler" id="fs-1">
-        <iframe
-          src="https://flo.uri.sh/story/3695352/embed"
-          title="Interactive or visual content"
-          class="flourish-embed-iframe"
-          frameborder="0"
-          scrolling="no"
-          sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-          allowfullscreen
-        ></iframe>
+    <div class="scroll-viz-layout">
+
+      <!-- MAPA STICKY -->
+      <div class="scroll-map-sticky">
+        <div class="smap-header">
+          <span class="smap-year" id="smap-year">1992</span>
+          <span class="smap-event" id="smap-event">Alemania reunificada</span>
+        </div>
+        <div id="de-map"></div>
+        <div class="smap-footer">
+          <div class="smap-legend">
+            <span>0</span>
+            <div class="smap-legend-bar"></div>
+            <span>4 M</span>
+          </div>
+          <div class="smap-total">
+            Residentes extranjeros
+            <strong id="smap-total-val">6,1 M</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANELES SCROLL -->
+      <div class="scroll-panels" id="scroll-panels">
+
+        <div class="spanel active" data-frame="0">
+          <div class="spanel-year">1992</div>
+          <div class="spanel-event">Alemania reunificada</div>
+          <div class="spanel-stat">6,1 millones de residentes extranjeros</div>
+          <p class="spanel-body">Tras la reunificación, Alemania concentraba ya la mayor comunidad inmigrante de Europa occidental. Los estados del oeste —NRW, Bayern, Baden-Württemberg— acumulan el grueso histórico, mientras los estados del este, recién incorporados, parten de casi cero.</p>
+        </div>
+
+        <div class="spanel" data-frame="1">
+          <div class="spanel-year">2000</div>
+          <div class="spanel-event">Primer plateau migratorio</div>
+          <div class="spanel-stat">7,3 millones de residentes extranjeros</div>
+          <p class="spanel-body">La población extranjera creció moderadamente durante los años 90. Las ciudades-estado —Hamburgo, Bremen, Berlín— y Hessen superan la media nacional en proporción. El este sigue muy por debajo: la brecha entre el mapa occidental oscuro y el oriental claro es marcada.</p>
+        </div>
+
+        <div class="spanel" data-frame="2">
+          <div class="spanel-year">2008</div>
+          <div class="spanel-event">Estabilización</div>
+          <div class="spanel-stat">6,7 millones de residentes extranjeros</div>
+          <p class="spanel-body">Una ola de naturalizaciones durante los 2000 redujo el número oficial de extranjeros. El mapa apenas cambia de tono respecto al año 2000: la distribución geográfica se mantiene estable, con el oeste claramente más oscuro que el este.</p>
+        </div>
+
+        <div class="spanel" data-frame="3">
+          <div class="spanel-year">2015</div>
+          <div class="spanel-event">Comienzo del gran salto</div>
+          <div class="spanel-stat">8,7 millones de residentes extranjeros</div>
+          <p class="spanel-body">La crisis siria y la apertura de fronteras de 2015 inician una aceleración sin precedentes. NRW, Bayern y Baden-Württemberg comienzan a oscurecerse notablemente. Incluso los estados del este registran un aumento visible por primera vez en décadas.</p>
+        </div>
+
+        <div class="spanel" data-frame="4">
+          <div class="spanel-year">2019</div>
+          <div class="spanel-event">Crecimiento acelerado</div>
+          <div class="spanel-stat">11,2 millones de residentes extranjeros</div>
+          <p class="spanel-body">Cuatro años de inmigración sostenida —trabajadores de la UE, refugiados reconocidos, reagrupación familiar— elevan las cifras a máximos históricos. El azul se intensifica en todo el país. NRW supera los 3 millones de residentes extranjeros.</p>
+        </div>
+
+        <div class="spanel" data-frame="5">
+          <div class="spanel-year">2023</div>
+          <div class="spanel-event">Cifra histórica</div>
+          <div class="spanel-stat">13,5 millones de residentes extranjeros</div>
+          <p class="spanel-body">El mayor stock migratorio de la historia alemana. La guerra en Ucrania sumó más de un millón de desplazados adicionales. El mapa alcanza su tono más oscuro: NRW roza los 4 millones, y por primera vez los estados del este muestran azules medios.</p>
+        </div>
+
       </div>
     </div>
   </div>
+  <div id="map-tooltip"><div class="tt-state" id="tt-state"></div><div class="tt-val" id="tt-val"></div></div>
 
   <!-- VIZ 02 -->
   <div class="viz-section">
@@ -289,62 +452,176 @@
   </footer>
 
   <script>
-    // Tamaño nativo al que Flourish renderiza bien el story (16:9)
-    // Flourish /embed endpoint: 600px de alto es su tamaño nativo recomendado
-    var NATIVE_W = 1400;
-    var NATIVE_H = 800;
-
-    function scaleEmbed(containerId, scalerId) {
-      var container = document.getElementById(containerId);
-      var scaler    = document.getElementById(scalerId);
-      if (!container || !scaler) return;
-
-      var containerW = container.offsetWidth;
-
-      // Espacio disponible en pantalla: viewport - nav(44) - switcher(48) - texto(~180)
-      var maxH = window.innerHeight - 272;
-
-      var scaleByW = containerW / NATIVE_W;
-      var scaleByH = maxH / NATIVE_H;
-      var scale    = Math.min(scaleByW, scaleByH);
-
-      var iframe = scaler.querySelector('iframe');
-      if (iframe) {
-        iframe.style.width  = NATIVE_W + 'px';
-        iframe.style.height = NATIVE_H + 'px';
-      }
-
-      scaler.style.width     = NATIVE_W + 'px';
-      scaler.style.height    = NATIVE_H + 'px';
-      scaler.style.transform = 'scale(' + scale + ')';
-
-      container.style.height = (NATIVE_H * scale) + 'px';
+    /* ══════════════════════════════════════════════
+       VIZ 02 — Flourish bar chart race (escala)
+    ══════════════════════════════════════════════ */
+    var NATIVE_W = 1400, NATIVE_H = 800;
+    function scaleEmbed(cId, sId) {
+      var c = document.getElementById(cId), s = document.getElementById(sId);
+      if (!c || !s) return;
+      var scale = Math.min(c.offsetWidth / NATIVE_W, (window.innerHeight - 272) / NATIVE_H);
+      var ifr = s.querySelector('iframe');
+      if (ifr) { ifr.style.width = NATIVE_W + 'px'; ifr.style.height = NATIVE_H + 'px'; }
+      s.style.width = NATIVE_W + 'px'; s.style.height = NATIVE_H + 'px';
+      s.style.transform = 'scale(' + scale + ')';
+      c.style.height = (NATIVE_H * scale) + 'px';
     }
-
-    function scaleAll() {
-      scaleEmbed('fc-1', 'fs-1');
-      scaleEmbed('fc-2', 'fs-2');
-    }
+    function scaleAll() { scaleEmbed('fc-2', 'fs-2'); }
     scaleAll();
     window.addEventListener('resize', scaleAll);
 
-    // ── PARALLAX bandera ──
+    /* ══════════════════════════════════════════════
+       VIZ 01 — Mapa coroplético scroll-driven
+    ══════════════════════════════════════════════ */
+    // Unidad: 100.000 residentes extranjeros por estado (Ausländer, Destatis)
+    var FRAMES = [
+      {
+        year: '1992', event: 'Alemania reunificada', total: '6,1 M',
+        data: {
+          'Nordrhein-Westfalen': 20.5, 'Bayern': 9.8,  'Baden-Württemberg': 10.8,
+          'Niedersachsen': 4.1,  'Hessen': 6.5,  'Sachsen': 0.5,
+          'Rheinland-Pfalz': 2.5, 'Berlin': 3.5,  'Schleswig-Holstein': 1.2,
+          'Brandenburg': 0.3, 'Sachsen-Anhalt': 0.3, 'Thüringen': 0.3,
+          'Hamburg': 2.3, 'Mecklenburg-Vorpommern': 0.2, 'Saarland': 0.8, 'Bremen': 0.9
+        }
+      },
+      {
+        year: '2000', event: 'Primer plateau migratorio', total: '7,3 M',
+        data: {
+          'Nordrhein-Westfalen': 24.5, 'Bayern': 12.5, 'Baden-Württemberg': 13.0,
+          'Niedersachsen': 5.0,  'Hessen': 7.8,  'Sachsen': 0.8,
+          'Rheinland-Pfalz': 3.0, 'Berlin': 4.4,  'Schleswig-Holstein': 1.5,
+          'Brandenburg': 0.5, 'Sachsen-Anhalt': 0.5, 'Thüringen': 0.5,
+          'Hamburg': 2.7, 'Mecklenburg-Vorpommern': 0.3, 'Saarland': 0.9, 'Bremen': 0.95
+        }
+      },
+      {
+        year: '2008', event: 'Estabilización', total: '6,7 M',
+        data: {
+          'Nordrhein-Westfalen': 22.5, 'Bayern': 11.8, 'Baden-Württemberg': 12.2,
+          'Niedersachsen': 4.7,  'Hessen': 7.5,  'Sachsen': 1.0,
+          'Rheinland-Pfalz': 2.9, 'Berlin': 4.8,  'Schleswig-Holstein': 1.4,
+          'Brandenburg': 0.5, 'Sachsen-Anhalt': 0.5, 'Thüringen': 0.5,
+          'Hamburg': 2.8, 'Mecklenburg-Vorpommern': 0.3, 'Saarland': 0.8, 'Bremen': 0.9
+        }
+      },
+      {
+        year: '2015', event: 'Comienzo del gran salto', total: '8,7 M',
+        data: {
+          'Nordrhein-Westfalen': 27.5, 'Bayern': 16.5, 'Baden-Württemberg': 16.0,
+          'Niedersachsen': 6.5,  'Hessen': 9.8,  'Sachsen': 1.5,
+          'Rheinland-Pfalz': 3.8, 'Berlin': 7.0,  'Schleswig-Holstein': 2.0,
+          'Brandenburg': 0.9, 'Sachsen-Anhalt': 0.8, 'Thüringen': 0.8,
+          'Hamburg': 3.5, 'Mecklenburg-Vorpommern': 0.5, 'Saarland': 0.95, 'Bremen': 1.1
+        }
+      },
+      {
+        year: '2019', event: 'Crecimiento acelerado', total: '11,2 M',
+        data: {
+          'Nordrhein-Westfalen': 33.5, 'Bayern': 21.0, 'Baden-Württemberg': 20.5,
+          'Niedersachsen': 9.5,  'Hessen': 13.5, 'Sachsen': 2.5,
+          'Rheinland-Pfalz': 5.0, 'Berlin': 9.5,  'Schleswig-Holstein': 3.0,
+          'Brandenburg': 1.5, 'Sachsen-Anhalt': 1.2, 'Thüringen': 1.2,
+          'Hamburg': 4.5, 'Mecklenburg-Vorpommern': 0.8, 'Saarland': 1.1, 'Bremen': 1.4
+        }
+      },
+      {
+        year: '2023', event: 'Cifra histórica', total: '13,5 M',
+        data: {
+          'Nordrhein-Westfalen': 39.0, 'Bayern': 25.5, 'Baden-Württemberg': 24.5,
+          'Niedersachsen': 12.5, 'Hessen': 17.0, 'Sachsen': 3.5,
+          'Rheinland-Pfalz': 6.5, 'Berlin': 12.0, 'Schleswig-Holstein': 4.2,
+          'Brandenburg': 2.5, 'Sachsen-Anhalt': 2.0, 'Thüringen': 2.0,
+          'Hamburg': 5.5, 'Mecklenburg-Vorpommern': 1.3, 'Saarland': 1.4, 'Bremen': 1.8
+        }
+      }
+    ];
+
+    var COLOR_MAX   = 42; // NRW 2023 ≈ 39 → escala 0-42 da contraste máximo
+    var colorScale  = d3.scaleSequential(d3.interpolateBlues).domain([0, COLOR_MAX]);
+    var currentFrame = 0;
+    var mapPaths     = null;
+    var tooltip      = document.getElementById('map-tooltip');
+
+    function updateFrame(idx) {
+      if (idx === currentFrame && mapPaths) { /* still update active panel */ }
+      currentFrame = idx;
+      var f = FRAMES[idx];
+      document.getElementById('smap-year').textContent      = f.year;
+      document.getElementById('smap-event').textContent     = f.event;
+      document.getElementById('smap-total-val').textContent = f.total;
+      document.querySelectorAll('.spanel').forEach(function(p, i) {
+        p.classList.toggle('active', i === idx);
+      });
+      if (mapPaths) {
+        mapPaths.transition().duration(600).ease(d3.easeCubicInOut)
+          .attr('fill', function(d) {
+            return colorScale(f.data[d.properties.name] || 0);
+          });
+      }
+    }
+
+    function buildMap(geo) {
+      var el = document.getElementById('de-map');
+      var W  = el.offsetWidth || 500;
+      var H  = Math.round(W * 1.12);
+      var svg = d3.select('#de-map').append('svg')
+        .attr('viewBox', '0 0 ' + W + ' ' + H)
+        .attr('width', W).attr('height', H);
+      var proj = d3.geoMercator().fitSize([W, H], geo);
+      var path = d3.geoPath().projection(proj);
+
+      mapPaths = svg.selectAll('path')
+        .data(geo.features)
+        .enter().append('path')
+        .attr('d', path)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1.2)
+        .attr('fill', function(d) {
+          return colorScale(FRAMES[0].data[d.properties.name] || 0);
+        })
+        .on('mousemove', function(event, d) {
+          var name = d.properties.name;
+          var val  = FRAMES[currentFrame].data[name] || 0;
+          tooltip.style.display = 'block';
+          tooltip.style.left = (event.clientX + 14) + 'px';
+          tooltip.style.top  = (event.clientY - 14) + 'px';
+          document.getElementById('tt-state').textContent = name;
+          document.getElementById('tt-val').textContent   = (val * 100).toFixed(0) + '.000 residentes ext.';
+        })
+        .on('mouseleave', function() { tooltip.style.display = 'none'; });
+    }
+
+    fetch('https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/3_mittel.geo.json')
+      .then(function(r) { return r.json(); })
+      .then(buildMap)
+      .catch(function() {
+        document.getElementById('de-map').innerHTML =
+          '<p style="padding:24px;color:#aaa;font-size:13px">Mapa no disponible en modo offline. Abrí el archivo desde un servidor local.</p>';
+      });
+
+    // Scroll observer — activa frame cuando el panel ocupa el centro del viewport
+    var panelObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) updateFrame(+e.target.dataset.frame);
+      });
+    }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
+
+    document.querySelectorAll('.spanel').forEach(function(p) { panelObserver.observe(p); });
+
+    /* ── PARALLAX bandera ── */
     var flagImg = document.querySelector('.hero-flag-wrap');
     window.addEventListener('scroll', function() {
-      if (!flagImg) return;
-      var y = window.scrollY;
-      flagImg.style.transform = 'translateY(' + (y * 0.12) + 'px)';
+      if (flagImg) flagImg.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)';
     }, { passive: true });
 
-    // ── STATS + línea: entran cuando son visibles ──
+    /* ── STATS + línea ── */
     var io = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
       });
     }, { threshold: 0.25 });
-
     document.querySelectorAll('.stat').forEach(function(el) { io.observe(el); });
-
     var stripIO = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) { e.target.classList.add('in-view'); stripIO.unobserve(e.target); }

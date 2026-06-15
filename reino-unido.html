@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
   <style>
     :root {
       --primary:          #0066cc;
@@ -113,6 +115,32 @@
     @media (max-width: 900px) { .viz-two-col { grid-template-columns: 1fr; } .viz-sidebar { border-left: none; border-top: 1px solid var(--hairline); height: auto; } }
 
     @media (max-width: 640px) { .hero-inner { flex-direction: column-reverse; align-items: flex-start; } .hero-flag-wrap { width: 80px; } }
+
+    /* ── SCROLL VIZ LAYOUT ── */
+    .scroll-viz-layout { display: grid; grid-template-columns: 1fr 360px; align-items: start; border-top: 1px solid var(--hairline); }
+    .scroll-map-sticky { position: sticky; top: 92px; height: calc(100vh - 92px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 32px; gap: 14px; background: var(--canvas); }
+    .smap-header { display: flex; flex-direction: column; align-items: flex-start; width: 100%; max-width: 520px; }
+    .smap-year { font-family: var(--ff-d); font-size: clamp(36px,4vw,56px); font-weight: 700; line-height: 1; color: var(--accent); }
+    .smap-event { font-family: var(--ff-t); font-size: 14px; color: var(--ink-muted-48); margin-top: 4px; }
+    #de-map { width: 100%; max-width: 520px; }
+    #de-map svg { display: block; width: 100%; height: auto; }
+    #de-map path { cursor: default; transition: fill 0.55s cubic-bezier(.25,.46,.45,.94); }
+    .smap-footer { width: 100%; max-width: 520px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .smap-legend { display: flex; align-items: center; gap: 8px; font-family: var(--ff-t); font-size: 11px; color: var(--ink-muted-48); }
+    .smap-legend-bar { width: 80px; height: 8px; border-radius: 4px; background: linear-gradient(to right, #dce9f5, #08306b); }
+    .smap-total { font-family: var(--ff-t); font-size: 12px; color: var(--ink-muted-48); text-align: right; }
+    .smap-total strong { font-family: var(--ff-d); font-size: 15px; color: var(--ink); display: block; }
+    .scroll-panels { border-left: 1px solid var(--hairline); background: var(--canvas-parchment); }
+    .spanel { min-height: 100vh; padding: 56px 36px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid var(--hairline); opacity: 0.35; transition: opacity 0.4s ease; }
+    .spanel.active { opacity: 1; }
+    .spanel-year { font-family: var(--ff-d); font-size: 48px; font-weight: 700; line-height: 1; color: var(--accent); margin-bottom: 6px; }
+    .spanel-event { font-family: var(--ff-d); font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 16px; }
+    .spanel-stat { font-family: var(--ff-d); font-size: 13px; font-weight: 600; color: var(--ink-muted-48); margin-bottom: 20px; padding: 8px 12px; background: var(--canvas); border-radius: 8px; border: 1px solid var(--hairline); display: inline-block; }
+    .spanel-body { font-family: var(--ff-t); font-size: 14px; line-height: 1.65; color: var(--ink-muted-48); }
+    #map-tooltip { position: fixed; pointer-events: none; display: none; background: #1d1d1f; color: #fff; border-radius: 10px; padding: 10px 14px; font-family: var(--ff-t); font-size: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.22); z-index: 999; min-width: 140px; }
+    #map-tooltip .tt-state { font-family: var(--ff-d); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    #map-tooltip .tt-val { color: #a0c4ff; font-weight: 600; }
+    @media (max-width: 900px) { .scroll-viz-layout { grid-template-columns: 1fr; } .scroll-map-sticky { position: relative; top: 0; height: auto; padding: 32px 20px 16px; } .scroll-panels { border-left: none; border-top: 1px solid var(--hairline); } .spanel { min-height: 70vh; } }
   </style>
 </head>
 <body>
@@ -166,20 +194,56 @@
   <div class="viz-section">
     <div class="viz-text">
       <p class="eyebrow">Visualización 01</p>
-      <h2 class="section-title">Flujos migratorios: asilo legal e inmigración irregular</h2>
-      <p class="section-body">El Reino Unido mantuvo cifras estables hasta 2019, cuando el Brexit y la ruta del Canal de la Mancha aceleraron el flujo. El gráfico combina solicitudes de asilo formales con estimaciones de inmigración irregular. Afganistán, Irán y Albania lideran los orígenes en la última etapa.</p>
+      <h2 class="section-title">Distribución territorial de la inmigración en el Reino Unido</h2>
+      <p class="section-body">La población extranjera en el Reino Unido se multiplicó por cuatro entre 1992 y 2023, pasando de 1,9 a 7,7 millones. Londres concentra el mayor número, pero regiones como el Noroeste y los Midlands también crecieron significativamente.</p>
     </div>
-    <div class="flourish-container" id="fc-1">
-      <div class="flourish-scaler" id="fs-1">
-        <iframe
-          src="https://flo.uri.sh/story/3695377/embed"
-          title="Interactive or visual content"
-          class="flourish-embed-iframe"
-          frameborder="0"
-          scrolling="no"
-          sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-          allowfullscreen
-        ></iframe>
+  </div>
+  <div class="scroll-viz-layout">
+    <div class="scroll-map-sticky">
+      <div class="smap-header">
+        <span class="smap-year" id="uk-smap-year">1992</span>
+        <span class="smap-event" id="uk-smap-event">Pre-era Blair</span>
+      </div>
+      <div id="uk-map" style="width:100%;max-width:480px;"></div>
+      <div class="smap-footer">
+        <div class="smap-legend">
+          <span>0</span>
+          <div class="smap-legend-bar"></div>
+          <span>3 M</span>
+        </div>
+        <div class="smap-total">Residentes extranjeros <strong id="uk-smap-total-val">1,9 M</strong></div>
+      </div>
+    </div>
+    <div class="scroll-panels" id="scroll-panels-uk">
+      <div class="spanel active" data-frame="0">
+        <p class="eyebrow">1992</p>
+        <h3>Pre-era Blair: 1,9 millones</h3>
+        <p>El Reino Unido de principios de los 90 tenía una inmigración relativamente contenida. Londres ya concentraba más de la mitad del total, con comunidades caribeñas, del sur de Asia y africanas bien establecidas.</p>
+      </div>
+      <div class="spanel" data-frame="1">
+        <p class="eyebrow">2000</p>
+        <h3>Apertura gradual</h3>
+        <p>Con 2,3 millones de residentes extranjeros, el gobierno Blair comenzó a abrir las puertas a trabajadores cualificados. La ampliación inminente de la UE y la demanda laboral empezaron a moldear los nuevos flujos.</p>
+      </div>
+      <div class="spanel" data-frame="2">
+        <p class="eyebrow">2007</p>
+        <h3>El boom de la ampliación europea</h3>
+        <p>Tras la incorporación de Polonia y otros países del este de Europa en 2004, el RU fue uno de los pocos estados que no impuso restricciones. El número de extranjeros saltó a 3,7 millones, con polacos, lituanos y eslovacos transformando el mapa migratorio.</p>
+      </div>
+      <div class="spanel" data-frame="3">
+        <p class="eyebrow">2015</p>
+        <h3>Crecimiento acelerado: 5,6 millones</h3>
+        <p>Con el 8,7% de la población de origen extranjero, el debate sobre inmigración marcó la agenda política. La crisis de refugiados siria añadió presión al sistema, mientras que los ciudadanos de la UE seguían siendo la mayoría de los nuevos residentes.</p>
+      </div>
+      <div class="spanel" data-frame="4">
+        <p class="eyebrow">2020</p>
+        <h3>Brexit: fin de la libre circulación</h3>
+        <p>Con 6,2 millones de extranjeros, el Brexit reorientó los flujos: menos europeos, más asiáticos y africanos bajo el nuevo sistema de puntos. Escocia y Gales ganaron peso relativo ante la necesidad de trabajadores en sectores clave.</p>
+      </div>
+      <div class="spanel" data-frame="5">
+        <p class="eyebrow">2023</p>
+        <h3>Récord histórico: 7,7 millones</h3>
+        <p>El Reino Unido alcanzó su máximo histórico con 7,7 millones de residentes extranjeros (11,4% de la población). Londres supera los 2,7 millones; el Noroeste y los Midlands Occidentales son las otras grandes regiones receptoras.</p>
       </div>
     </div>
   </div>
@@ -229,6 +293,109 @@
   </footer>
 
   <script>
+    // ── CHOROPLETH SCROLLYTELLING (VIZ 01) ──
+    var UK_FRAMES = [
+      { year: '1992', event: 'Pre-era Blair', total: '1,9 M',
+        data: { 'London': 10.5, 'South East': 2.2, 'North West': 1.6, 'West Midlands': 1.7,
+                'Yorkshire and The Humber': 1.0, 'Eastern': 1.2, 'East Midlands': 0.8,
+                'South West': 0.8, 'North East': 0.3, 'Scotland': 0.8, 'Wales': 0.5 } },
+      { year: '2000', event: 'Apertura gradual', total: '2,3 M',
+        data: { 'London': 12.5, 'South East': 2.7, 'North West': 1.9, 'West Midlands': 2.0,
+                'Yorkshire and The Humber': 1.2, 'Eastern': 1.5, 'East Midlands': 1.0,
+                'South West': 0.9, 'North East': 0.4, 'Scotland': 1.0, 'Wales': 0.6 } },
+      { year: '2007', event: 'Boom de la ampliación europea', total: '3,7 M',
+        data: { 'London': 18.5, 'South East': 4.5, 'North West': 3.2, 'West Midlands': 3.3,
+                'Yorkshire and The Humber': 2.2, 'Eastern': 2.8, 'East Midlands': 2.2,
+                'South West': 1.6, 'North East': 0.7, 'Scotland': 1.8, 'Wales': 1.0 } },
+      { year: '2015', event: 'Crecimiento acelerado', total: '5,6 M',
+        data: { 'London': 24.0, 'South East': 6.5, 'North West': 5.0, 'West Midlands': 5.2,
+                'Yorkshire and The Humber': 3.5, 'Eastern': 4.2, 'East Midlands': 3.8,
+                'South West': 2.5, 'North East': 1.0, 'Scotland': 2.8, 'Wales': 1.6 } },
+      { year: '2020', event: 'Brexit: fin de la libre circulación', total: '6,2 M',
+        data: { 'London': 26.0, 'South East': 7.2, 'North West': 5.6, 'West Midlands': 5.8,
+                'Yorkshire and The Humber': 3.9, 'Eastern': 4.7, 'East Midlands': 4.3,
+                'South West': 2.9, 'North East': 1.1, 'Scotland': 3.2, 'Wales': 1.8 } },
+      { year: '2023', event: 'Récord histórico', total: '7,7 M',
+        data: { 'London': 27.5, 'South East': 9.0, 'North West': 7.0, 'West Midlands': 7.2,
+                'Yorkshire and The Humber': 5.0, 'Eastern': 6.0, 'East Midlands': 5.5,
+                'South West': 3.8, 'North East': 1.4, 'Scotland': 4.0, 'Wales': 2.4 } }
+    ];
+
+    var UK_COLOR_MAX = 30;
+    var ukColorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, UK_COLOR_MAX]);
+    var ukMapPaths = null;
+    var ukCurrentFrame = 0;
+
+    function ukGetName(props) {
+      return props.EER13NM || props.eer13nm || props.name || props.NAME || '';
+    }
+
+    function ukUpdateFrame(idx) {
+      ukCurrentFrame = idx;
+      var f = UK_FRAMES[idx];
+      document.getElementById('uk-smap-year').textContent = f.year;
+      document.getElementById('uk-smap-event').textContent = f.event;
+      document.getElementById('uk-smap-total-val').textContent = f.total;
+      document.querySelectorAll('#scroll-panels-uk .spanel').forEach(function(p, i) {
+        p.classList.toggle('active', i === idx);
+      });
+      if (ukMapPaths) {
+        ukMapPaths.transition().duration(600).ease(d3.easeCubicInOut)
+          .attr('fill', function(d) {
+            return ukColorScale(f.data[ukGetName(d.properties)] || 0);
+          });
+      }
+    }
+
+    var ukTooltip = d3.select('body').append('div')
+      .attr('class', 'smap-tooltip')
+      .style('display', 'none');
+
+    function ukBuildMap(geo) {
+      var el = document.getElementById('uk-map');
+      var W = el.offsetWidth || 460;
+      var H = Math.round(W * 1.4);
+      var svg = d3.select('#uk-map').append('svg')
+        .attr('viewBox', '0 0 ' + W + ' ' + H)
+        .style('width', '100%').style('height', 'auto');
+      var proj = d3.geoMercator().fitSize([W, H], geo);
+      var path = d3.geoPath().projection(proj);
+      ukMapPaths = svg.selectAll('path').data(geo.features).enter().append('path')
+        .attr('d', path)
+        .attr('stroke', '#fff').attr('stroke-width', 1.2)
+        .attr('fill', function(d) {
+          return ukColorScale(UK_FRAMES[0].data[ukGetName(d.properties)] || 0);
+        })
+        .on('mousemove', function(event, d) {
+          var name = ukGetName(d.properties);
+          var val = UK_FRAMES[ukCurrentFrame].data[name] || 0;
+          ukTooltip.style('display', 'block')
+            .style('left', (event.pageX + 12) + 'px')
+            .style('top', (event.pageY - 28) + 'px')
+            .html('<strong>' + name + '</strong><br>' + (val * 100).toFixed(0) + ' K extranjeros');
+        })
+        .on('mouseleave', function() { ukTooltip.style('display', 'none'); });
+    }
+
+    fetch('https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/eer.json')
+      .then(function(r) { return r.json(); })
+      .then(function(geo) {
+        ukBuildMap(geo);
+      })
+      .catch(function() {
+        document.getElementById('uk-map').innerHTML = '<p style="color:#888;padding:20px">Error al cargar el mapa.</p>';
+      });
+
+    var ukPanelObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) ukUpdateFrame(+e.target.dataset.frame);
+      });
+    }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
+    document.querySelectorAll('#scroll-panels-uk .spanel').forEach(function(p) {
+      ukPanelObserver.observe(p);
+    });
+
+    // ── FLOURISH SCALER (VIZ 02) ──
     var NATIVE_W = 1400;
     var NATIVE_H = 800;
 
@@ -238,10 +405,8 @@
       if (!container || !scaler) return;
       var containerW = container.offsetWidth;
       var maxH       = window.innerHeight - 272;
-      var scaleByW   = containerW / NATIVE_W;
-      var scaleByH   = maxH / NATIVE_H;
-      var scale      = Math.min(scaleByW, scaleByH);
-      var iframe = scaler.querySelector('iframe');
+      var scale      = Math.min(containerW / NATIVE_W, maxH / NATIVE_H);
+      var iframe     = scaler.querySelector('iframe');
       if (iframe) { iframe.style.width = NATIVE_W + 'px'; iframe.style.height = NATIVE_H + 'px'; }
       scaler.style.width     = NATIVE_W + 'px';
       scaler.style.height    = NATIVE_H + 'px';
@@ -250,7 +415,6 @@
     }
 
     function scaleAll() {
-      scaleEmbed('fc-1', 'fs-1');
       scaleEmbed('fc-2', 'fs-2');
     }
     scaleAll();
@@ -258,8 +422,7 @@
 
     var flagImg = document.querySelector('.hero-flag-wrap');
     window.addEventListener('scroll', function() {
-      if (!flagImg) return;
-      flagImg.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)';
+      if (flagImg) flagImg.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)';
     }, { passive: true });
 
     var io = new IntersectionObserver(function(entries) {

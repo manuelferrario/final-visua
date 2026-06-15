@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
       --primary:          #0066cc;
@@ -113,6 +114,32 @@
     @media (max-width: 900px) { .viz-two-col { grid-template-columns: 1fr; } .viz-sidebar { border-left: none; border-top: 1px solid var(--hairline); height: auto; } }
 
     @media (max-width: 640px) { .hero-inner { flex-direction: column-reverse; align-items: flex-start; } .hero-flag-wrap { width: 80px; } }
+
+    /* ── SCROLL VIZ LAYOUT ── */
+    .scroll-viz-layout { display: grid; grid-template-columns: 1fr 360px; align-items: start; border-top: 1px solid var(--hairline); }
+    .scroll-map-sticky { position: sticky; top: 92px; height: calc(100vh - 92px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 32px; gap: 14px; background: var(--canvas); }
+    .smap-header { display: flex; flex-direction: column; align-items: flex-start; width: 100%; max-width: 520px; }
+    .smap-year { font-family: var(--ff-d); font-size: clamp(36px,4vw,56px); font-weight: 700; line-height: 1; color: var(--accent); }
+    .smap-event { font-family: var(--ff-t); font-size: 14px; color: var(--ink-muted-48); margin-top: 4px; }
+    #de-map { width: 100%; max-width: 520px; }
+    #de-map svg { display: block; width: 100%; height: auto; }
+    #de-map path { cursor: default; transition: fill 0.55s cubic-bezier(.25,.46,.45,.94); }
+    .smap-footer { width: 100%; max-width: 520px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .smap-legend { display: flex; align-items: center; gap: 8px; font-family: var(--ff-t); font-size: 11px; color: var(--ink-muted-48); }
+    .smap-legend-bar { width: 80px; height: 8px; border-radius: 4px; background: linear-gradient(to right, #dce9f5, #08306b); }
+    .smap-total { font-family: var(--ff-t); font-size: 12px; color: var(--ink-muted-48); text-align: right; }
+    .smap-total strong { font-family: var(--ff-d); font-size: 15px; color: var(--ink); display: block; }
+    .scroll-panels { border-left: 1px solid var(--hairline); background: var(--canvas-parchment); }
+    .spanel { min-height: 100vh; padding: 56px 36px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid var(--hairline); opacity: 0.35; transition: opacity 0.4s ease; }
+    .spanel.active { opacity: 1; }
+    .spanel-year { font-family: var(--ff-d); font-size: 48px; font-weight: 700; line-height: 1; color: var(--accent); margin-bottom: 6px; }
+    .spanel-event { font-family: var(--ff-d); font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 16px; }
+    .spanel-stat { font-family: var(--ff-d); font-size: 13px; font-weight: 600; color: var(--ink-muted-48); margin-bottom: 20px; padding: 8px 12px; background: var(--canvas); border-radius: 8px; border: 1px solid var(--hairline); display: inline-block; }
+    .spanel-body { font-family: var(--ff-t); font-size: 14px; line-height: 1.65; color: var(--ink-muted-48); }
+    #map-tooltip { position: fixed; pointer-events: none; display: none; background: #1d1d1f; color: #fff; border-radius: 10px; padding: 10px 14px; font-family: var(--ff-t); font-size: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.22); z-index: 999; min-width: 140px; }
+    #map-tooltip .tt-state { font-family: var(--ff-d); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    #map-tooltip .tt-val { color: #a0c4ff; font-weight: 600; }
+    @media (max-width: 900px) { .scroll-viz-layout { grid-template-columns: 1fr; } .scroll-map-sticky { position: relative; top: 0; height: auto; padding: 32px 20px 16px; } .scroll-panels { border-left: none; border-top: 1px solid var(--hairline); } .spanel { min-height: 70vh; } }
   </style>
 </head>
 <body>
@@ -166,20 +193,56 @@
   <div class="viz-section">
     <div class="viz-text">
       <p class="eyebrow">Visualización 01</p>
-      <h2 class="section-title">Flujos migratorios: asilo legal e inmigración irregular</h2>
-      <p class="section-body">Francia mostró un crecimiento gradual y sostenido desde 2008. El gráfico combina solicitudes de asilo formales con estimaciones de inmigración irregular, mostrando la evolución anual y la composición por país de origen. Afganistán, Guinea y la R.D. Congo encabezan los flujos.</p>
+      <h2 class="section-title">Distribución territorial de la inmigración en Francia</h2>
+      <p class="section-body">La población extranjera en Francia creció de forma sostenida desde los años 90, concentrándose principalmente en Île-de-France, Auvergne-Rhône-Alpes y PACA. El mapa muestra cómo el stock de residentes extranjeros aumentó en cada región a lo largo del tiempo.</p>
     </div>
-    <div class="flourish-container" id="fc-1">
-      <div class="flourish-scaler" id="fs-1">
-        <iframe
-          src="https://flo.uri.sh/story/3695370/embed"
-          title="Interactive or visual content"
-          class="flourish-embed-iframe"
-          frameborder="0"
-          scrolling="no"
-          sandbox="allow-same-origin allow-forms allow-scripts allow-downloads allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-          allowfullscreen
-        ></iframe>
+  </div>
+  <div class="scroll-viz-layout">
+    <div class="scroll-map-sticky">
+      <div class="smap-header">
+        <span class="smap-year" id="smap-year">1992</span>
+        <span class="smap-event" id="smap-event">Inicio del período</span>
+      </div>
+      <div id="fr-map" style="width:100%;max-width:520px;"></div>
+      <div class="smap-footer">
+        <div class="smap-legend">
+          <span>0</span>
+          <div class="smap-legend-bar"></div>
+          <span>2,5 M</span>
+        </div>
+        <div class="smap-total">Residentes extranjeros <strong id="smap-total-val">3,6 M</strong></div>
+      </div>
+    </div>
+    <div class="scroll-panels" id="scroll-panels-fr">
+      <div class="spanel active" data-frame="0">
+        <p class="eyebrow">1992</p>
+        <h3>Una Francia ya diversa</h3>
+        <p>Con 3,6 millones de residentes extranjeros, Francia albergaba principalmente inmigrantes de Portugal, España, Italia y el Magreb. Île-de-France concentraba casi el 40% del total nacional.</p>
+      </div>
+      <div class="spanel" data-frame="1">
+        <p class="eyebrow">2000</p>
+        <h3>Leve descenso por naturalización</h3>
+        <p>La población extranjera bajó levemente a 3,3 millones, en parte por el efecto de las naturalizaciones masivas de los años 90. Sin embargo, el número real de inmigrantes (incluyendo naturalizados) seguía creciendo.</p>
+      </div>
+      <div class="spanel" data-frame="2">
+        <p class="eyebrow">2007</p>
+        <h3>Reactivación migratoria</h3>
+        <p>Con la ampliación de la UE y el crecimiento económico, Francia registró 3,7 millones de extranjeros. Los flujos desde Europa del Este y África subsahariana ganaron peso, especialmente en Île-de-France y el norte.</p>
+      </div>
+      <div class="spanel" data-frame="3">
+        <p class="eyebrow">2015</p>
+        <h3>Crisis de refugiados europea</h3>
+        <p>En plena crisis migratoria europea, Francia alcanzó 4,4 millones de residentes extranjeros. Siria, Afganistán y países subsaharianos se sumaron a los flujos tradicionales. Lyon y Marsella reforzaron su rol como polos de recepción.</p>
+      </div>
+      <div class="spanel" data-frame="4">
+        <p class="eyebrow">2020</p>
+        <h3>Crecimiento sostenido pese al COVID</h3>
+        <p>A pesar del cierre de fronteras durante la pandemia, el stock de extranjeros llegó a 4,9 millones. Las regiones del sur —PACA y Occitania— mostraron el mayor crecimiento relativo del período.</p>
+      </div>
+      <div class="spanel" data-frame="5">
+        <p class="eyebrow">2023</p>
+        <h3>Récord histórico: 5,5 millones</h3>
+        <p>Francia alcanzó su máximo histórico de residentes extranjeros con 5,5 millones, el 8% de la población total. Île-de-France concentra más de 2 millones; le siguen Auvergne-Rhône-Alpes y PACA como principales focos migratorios.</p>
       </div>
     </div>
   </div>
@@ -229,6 +292,117 @@
   </footer>
 
   <script>
+    // ── CHOROPLETH SCROLLYTELLING (VIZ 01) ──
+    var FR_FRAMES = [
+      { year: '1992', event: 'Inicio del período', total: '3,6 M',
+        data: { 'Île-de-France': 13.7, 'Auvergne-Rhône-Alpes': 4.8, 'Provence-Alpes-Côte d\'Azur': 4.2,
+                'Occitanie': 2.4, 'Nouvelle-Aquitaine': 2.0, 'Hauts-de-France': 2.2,
+                'Grand Est': 2.8, 'Normandie': 1.0, 'Pays de la Loire': 0.9,
+                'Bretagne': 0.5, 'Bourgogne-Franche-Comté': 0.9, 'Centre-Val de Loire': 0.8,
+                'Corse': 0.4 } },
+      { year: '2000', event: 'Leve descenso por naturalización', total: '3,3 M',
+        data: { 'Île-de-France': 12.5, 'Auvergne-Rhône-Alpes': 4.5, 'Provence-Alpes-Côte d\'Azur': 4.0,
+                'Occitanie': 2.2, 'Nouvelle-Aquitaine': 1.9, 'Hauts-de-France': 2.0,
+                'Grand Est': 2.6, 'Normandie': 0.9, 'Pays de la Loire': 0.9,
+                'Bretagne': 0.5, 'Bourgogne-Franche-Comté': 0.8, 'Centre-Val de Loire': 0.7,
+                'Corse': 0.4 } },
+      { year: '2007', event: 'Reactivación migratoria', total: '3,7 M',
+        data: { 'Île-de-France': 14.2, 'Auvergne-Rhône-Alpes': 5.1, 'Provence-Alpes-Côte d\'Azur': 4.4,
+                'Occitanie': 2.5, 'Nouvelle-Aquitaine': 2.1, 'Hauts-de-France': 2.2,
+                'Grand Est': 2.8, 'Normandie': 1.0, 'Pays de la Loire': 1.1,
+                'Bretagne': 0.6, 'Bourgogne-Franche-Comté': 0.9, 'Centre-Val de Loire': 0.8,
+                'Corse': 0.4 } },
+      { year: '2015', event: 'Crisis de refugiados europea', total: '4,4 M',
+        data: { 'Île-de-France': 17.0, 'Auvergne-Rhône-Alpes': 6.2, 'Provence-Alpes-Côte d\'Azur': 5.3,
+                'Occitanie': 3.0, 'Nouvelle-Aquitaine': 2.5, 'Hauts-de-France': 2.5,
+                'Grand Est': 3.2, 'Normandie': 1.2, 'Pays de la Loire': 1.4,
+                'Bretagne': 0.8, 'Bourgogne-Franche-Comté': 1.0, 'Centre-Val de Loire': 1.0,
+                'Corse': 0.5 } },
+      { year: '2020', event: 'Crecimiento sostenido pese al COVID', total: '4,9 M',
+        data: { 'Île-de-France': 19.0, 'Auvergne-Rhône-Alpes': 7.0, 'Provence-Alpes-Côte d\'Azur': 5.9,
+                'Occitanie': 3.5, 'Nouvelle-Aquitaine': 2.9, 'Hauts-de-France': 2.8,
+                'Grand Est': 3.5, 'Normandie': 1.3, 'Pays de la Loire': 1.7,
+                'Bretagne': 1.0, 'Bourgogne-Franche-Comté': 1.1, 'Centre-Val de Loire': 1.1,
+                'Corse': 0.6 } },
+      { year: '2023', event: 'Récord histórico', total: '5,5 M',
+        data: { 'Île-de-France': 20.9, 'Auvergne-Rhône-Alpes': 8.0, 'Provence-Alpes-Côte d\'Azur': 6.7,
+                'Occitanie': 4.1, 'Nouvelle-Aquitaine': 3.4, 'Hauts-de-France': 3.2,
+                'Grand Est': 4.0, 'Normandie': 1.5, 'Pays de la Loire': 2.1,
+                'Bretagne': 1.3, 'Bourgogne-Franche-Comté': 1.3, 'Centre-Val de Loire': 1.3,
+                'Corse': 0.7 } }
+    ];
+
+    var FR_COLOR_MAX = 25;
+    var frColorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, FR_COLOR_MAX]);
+    var frMapPaths = null;
+    var frCurrentFrame = 0;
+
+    function frUpdateFrame(idx) {
+      frCurrentFrame = idx;
+      var f = FR_FRAMES[idx];
+      document.getElementById('smap-year').textContent = f.year;
+      document.getElementById('smap-event').textContent = f.event;
+      document.getElementById('smap-total-val').textContent = f.total;
+      document.querySelectorAll('#scroll-panels-fr .spanel').forEach(function(p, i) {
+        p.classList.toggle('active', i === idx);
+      });
+      if (frMapPaths) {
+        frMapPaths.transition().duration(600).ease(d3.easeCubicInOut)
+          .attr('fill', function(d) {
+            var name = d.properties.nom || d.properties.name || '';
+            return frColorScale(f.data[name] || 0);
+          });
+      }
+    }
+
+    var frTooltip = d3.select('body').append('div')
+      .attr('class', 'smap-tooltip')
+      .style('display', 'none');
+
+    function frBuildMap(geo) {
+      var el = document.getElementById('fr-map');
+      var W = el.offsetWidth || 480;
+      var H = Math.round(W * 1.0);
+      var svg = d3.select('#fr-map').append('svg')
+        .attr('viewBox', '0 0 ' + W + ' ' + H)
+        .style('width', '100%').style('height', 'auto');
+      var proj = d3.geoMercator().fitSize([W, H], geo);
+      var path = d3.geoPath().projection(proj);
+      frMapPaths = svg.selectAll('path').data(geo.features).enter().append('path')
+        .attr('d', path)
+        .attr('stroke', '#fff').attr('stroke-width', 1.2)
+        .attr('fill', function(d) {
+          var name = d.properties.nom || d.properties.name || '';
+          return frColorScale(FR_FRAMES[0].data[name] || 0);
+        })
+        .on('mousemove', function(event, d) {
+          var name = d.properties.nom || d.properties.name || '';
+          var val = FR_FRAMES[frCurrentFrame].data[name] || 0;
+          frTooltip.style('display', 'block')
+            .style('left', (event.pageX + 12) + 'px')
+            .style('top', (event.pageY - 28) + 'px')
+            .html('<strong>' + name + '</strong><br>' + (val * 100).toFixed(0) + ' K extranjeros');
+        })
+        .on('mouseleave', function() { frTooltip.style('display', 'none'); });
+    }
+
+    fetch('https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/regions.geojson')
+      .then(function(r) { return r.json(); })
+      .then(frBuildMap)
+      .catch(function() {
+        document.getElementById('fr-map').innerHTML = '<p style="color:#888;padding:20px">Error al cargar el mapa.</p>';
+      });
+
+    var frPanelObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) frUpdateFrame(+e.target.dataset.frame);
+      });
+    }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
+    document.querySelectorAll('#scroll-panels-fr .spanel').forEach(function(p) {
+      frPanelObserver.observe(p);
+    });
+
+    // ── FLOURISH SCALER (VIZ 02) ──
     var NATIVE_W = 1400;
     var NATIVE_H = 800;
 
@@ -238,10 +412,8 @@
       if (!container || !scaler) return;
       var containerW = container.offsetWidth;
       var maxH       = window.innerHeight - 272;
-      var scaleByW   = containerW / NATIVE_W;
-      var scaleByH   = maxH / NATIVE_H;
-      var scale      = Math.min(scaleByW, scaleByH);
-      var iframe = scaler.querySelector('iframe');
+      var scale      = Math.min(containerW / NATIVE_W, maxH / NATIVE_H);
+      var iframe     = scaler.querySelector('iframe');
       if (iframe) { iframe.style.width = NATIVE_W + 'px'; iframe.style.height = NATIVE_H + 'px'; }
       scaler.style.width     = NATIVE_W + 'px';
       scaler.style.height    = NATIVE_H + 'px';
@@ -250,7 +422,6 @@
     }
 
     function scaleAll() {
-      scaleEmbed('fc-1', 'fs-1');
       scaleEmbed('fc-2', 'fs-2');
     }
     scaleAll();
@@ -258,8 +429,7 @@
 
     var flagImg = document.querySelector('.hero-flag-wrap');
     window.addEventListener('scroll', function() {
-      if (!flagImg) return;
-      flagImg.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)';
+      if (flagImg) flagImg.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)';
     }, { passive: true });
 
     var io = new IntersectionObserver(function(entries) {
