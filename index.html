@@ -37,6 +37,23 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* ── FADE-UP (scroll animations) ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(.25,.46,.45,.94),
+                  transform 0.7s cubic-bezier(.25,.46,.45,.94);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up[data-delay="1"] { transition-delay: 0.10s; }
+    .fade-up[data-delay="2"] { transition-delay: 0.20s; }
+    .fade-up[data-delay="3"] { transition-delay: 0.30s; }
+    .fade-up[data-delay="4"] { transition-delay: 0.40s; }
+    .fade-up[data-delay="5"] { transition-delay: 0.50s; }
+
     /* ── HERO ── */
     #hero {
       min-height: 100svh;
@@ -48,12 +65,15 @@
       position: relative;
     }
 
+    /* Hero load animation – each child staggers in */
     #hero h1 {
       font-family: var(--ff-d);
       font-size: clamp(40px, 7vw, 76px);
       font-weight: 600; line-height: 1.04; letter-spacing: -0.5px;
       color: var(--ink); margin-bottom: 24px;
       max-width: 880px;
+      opacity: 0;
+      animation: heroUp 0.9s cubic-bezier(.22,.68,0,1.2) 0.15s forwards;
     }
     #hero .subtitle {
       font-family: var(--ff-d);
@@ -61,43 +81,29 @@
       font-weight: 400; line-height: 1.3; letter-spacing: 0;
       color: var(--ink-muted-48); margin-bottom: 36px;
       max-width: 540px;
+      opacity: 0;
+      animation: heroUp 0.9s cubic-bezier(.22,.68,0,1.2) 0.32s forwards;
     }
-
-    /* Thin rule before byline */
     .hero-rule {
       width: 40px; height: 1px;
       background: var(--hairline);
       margin: 0 auto 20px;
+      opacity: 0;
+      animation: heroUp 0.7s ease 0.45s forwards;
     }
-
     #hero .byline {
       font-family: var(--ff-t); font-size: 12px; font-weight: 400;
       letter-spacing: 0; color: var(--ink-muted-48);
+      opacity: 0;
+      animation: heroUp 0.7s ease 0.52s forwards;
     }
     #hero .byline span { color: var(--hairline); margin: 0 8px; }
 
-    /* Country flag pills below byline */
-    .hero-flags {
-      display: flex; align-items: center; justify-content: center;
-      gap: 12px; margin-top: 36px;
-    }
-    .hero-flag-pill {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--canvas-parchment);
-      border: 1px solid var(--hairline);
-      border-radius: 9999px;
-      padding: 6px 14px 6px 8px;
-      text-decoration: none;
-      transition: background 0.15s, transform 0.15s;
-    }
-    .hero-flag-pill:hover { background: #ececee; transform: translateY(-1px); }
-    .hero-flag-pill img { width: 22px; height: auto; border-radius: 3px; }
-    .hero-flag-pill span {
-      font-family: var(--ff-t); font-size: 13px; font-weight: 400;
-      color: var(--ink); letter-spacing: -0.12px;
+    @keyframes heroUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Scroll cue */
     .scroll-cue {
       position: absolute; bottom: 32px; left: 50%;
       transform: translateX(-50%);
@@ -106,7 +112,8 @@
       font-family: var(--ff-t); font-size: 11px;
       letter-spacing: 0; color: var(--ink-muted-48);
       text-decoration: none;
-      animation: bounce 2.6s ease-in-out infinite;
+      opacity: 0;
+      animation: heroUp 0.7s ease 0.9s forwards, bounce 2.6s ease-in-out 1.6s infinite;
     }
     .scroll-cue svg { width: 18px; height: 18px; }
     @keyframes bounce {
@@ -139,7 +146,6 @@
       margin-bottom: 44px;
     }
 
-    /* Chart container */
     #line-chart {
       width: 100%;
       background: var(--canvas);
@@ -148,7 +154,6 @@
     }
     #line-chart svg { display: block; width: 100%; overflow: visible; }
 
-    /* Legend */
     .chart-footer {
       display: flex; align-items: center;
       justify-content: space-between;
@@ -167,7 +172,6 @@
       color: #aaa; letter-spacing: 0;
     }
 
-    /* Tooltip */
     #tooltip {
       position: fixed;
       background: var(--surface-tile-1);
@@ -191,6 +195,155 @@
     #tooltip .tt-left { display: flex; align-items: center; gap: 7px; }
     #tooltip .tt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     #tooltip .tt-val { font-weight: 600; white-space: nowrap; }
+
+    /* ── GALERÍA / CARRUSEL ── */
+    #galeria {
+      background: #0c0c0e;
+      padding: 88px 0 80px;
+      overflow: hidden;
+    }
+    .gallery-header {
+      padding: 0 24px;
+      margin-bottom: 48px;
+    }
+    .gallery-header .eyebrow { color: #555; }
+    .gallery-header .section-title { color: #f5f5f7; }
+    .gallery-header .section-body  { color: #888; }
+
+    /* Carousel wrapper */
+    .carousel {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .carousel-track-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16/9;
+    }
+
+    .carousel-track {
+      position: relative;
+      height: 100%;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.75s ease;
+      pointer-events: none;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .carousel-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.78);
+    }
+
+    /* Gradient overlay */
+    .carousel-slide::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.78) 0%,
+        rgba(0,0,0,0.28) 45%,
+        transparent 70%
+      );
+      border-radius: inherit;
+    }
+
+    .slide-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 32px 36px;
+      z-index: 2;
+    }
+
+    .slide-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 9999px;
+      padding: 4px 12px 4px 8px;
+      font-family: var(--ff-t); font-size: 12px;
+      color: #fff; margin-bottom: 14px;
+    }
+    .slide-badge img { width: 18px; border-radius: 2px; }
+
+    .slide-title {
+      font-family: var(--ff-d);
+      font-size: clamp(20px, 3vw, 30px);
+      font-weight: 600; line-height: 1.15;
+      letter-spacing: -0.2px; color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .slide-caption {
+      font-family: var(--ff-t); font-size: 14px;
+      line-height: 1.55; color: rgba(255,255,255,0.72);
+      max-width: 560px;
+    }
+
+    /* Carousel nav arrows */
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 10;
+      transition: background 0.2s, transform 0.2s;
+      color: #fff;
+    }
+    .carousel-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-prev { left: -4px; }
+    .carousel-next { right: -4px; }
+    .carousel-btn svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* Dots */
+    .carousel-dots {
+      display: flex; justify-content: center;
+      gap: 8px; margin-top: 22px;
+    }
+    .carousel-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      cursor: pointer;
+      transition: background 0.25s, width 0.3s, border-radius 0.3s;
+    }
+    .carousel-dot.active {
+      background: #fff;
+      width: 20px;
+      border-radius: 3px;
+    }
+
+    /* Slide counter */
+    .carousel-counter {
+      text-align: center;
+      font-family: var(--ff-t); font-size: 11px;
+      color: #555; margin-top: 12px;
+      letter-spacing: 0.04em;
+    }
 
     /* ── PAÍSES ── */
     #paises {
@@ -219,11 +372,9 @@
       --card-accent: #999;
     }
 
-    /* Tinte de color del país al hover */
     .country-card::after {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: var(--card-accent);
       opacity: 0;
       transition: opacity 0.28s;
@@ -242,7 +393,6 @@
     .country-card:hover::after { opacity: 0.055; }
     .country-card:active { transform: translateY(-2px) scale(0.99); }
 
-    /* Colored accent bar top */
     .cc-accent {
       height: 3px; width: 100%; flex-shrink: 0;
       transition: height 0.28s;
@@ -251,7 +401,6 @@
 
     .cc-body { padding: 28px 28px 24px; flex: 1; display: flex; flex-direction: column; }
 
-    /* Flag + num row */
     .cc-top {
       display: flex; align-items: center;
       justify-content: space-between;
@@ -286,11 +435,9 @@
       color: var(--ink-muted-48); margin-bottom: 20px; flex: 1;
     }
 
-    /* Mini sparkline */
     .cc-spark { margin-bottom: 20px; }
     .cc-spark svg { display: block; overflow: visible; }
 
-    /* Stat + CTA row */
     .cc-bottom {
       display: flex; align-items: flex-end;
       justify-content: space-between;
@@ -317,9 +464,11 @@
     @media (max-width: 834px) {
       .country-grid { grid-template-columns: 1fr; }
       .hero-flags { flex-wrap: wrap; }
+      .carousel-btn { display: none; }
     }
     @media (max-width: 640px) {
       #hero h1 { font-size: 40px; }
+      .slide-content { padding: 20px 22px; }
     }
   </style>
 </head>
@@ -346,13 +495,13 @@
   <!-- ── CONTEXTO ── -->
   <section id="contexto">
     <div class="section-inner">
-      <p class="eyebrow">Contexto general</p>
-      <h2 class="section-title">Solicitudes de asilo anuales (2008–2024)</h2>
-      <p class="section-body">
+      <p class="eyebrow fade-up">Contexto general</p>
+      <h2 class="section-title fade-up" data-delay="1">Solicitudes de asilo anuales (2008–2024)</h2>
+      <p class="section-body fade-up" data-delay="2">
         Dieciséis años de datos muestran el impacto desigual de las grandes crisis migratorias —Siria en 2015, Afganistán en 2021— sobre los tres principales receptores de Europa occidental.
       </p>
-      <div id="line-chart"></div>
-      <div class="chart-footer">
+      <div id="line-chart" class="fade-up" data-delay="3"></div>
+      <div class="chart-footer fade-up" data-delay="4">
         <div class="chart-legend">
           <div class="legend-item">
             <div class="legend-dot" style="background:#4a6fa5"></div>Alemania
@@ -369,19 +518,125 @@
     </div>
   </section>
 
+  <!-- ── GALERÍA / CARRUSEL ── -->
+  <section id="galeria">
+    <div class="gallery-header section-inner fade-up">
+      <p class="eyebrow">Impacto en imágenes</p>
+      <h2 class="section-title">Una migración que transforma</h2>
+      <p class="section-body">
+        Cómo la llegada masiva de solicitantes de asilo reconfiguró la vida cotidiana, las políticas públicas y los debates sociales en tres países.
+      </p>
+    </div>
+
+    <div class="carousel section-inner fade-up" data-delay="2">
+      <div class="carousel-track-wrap">
+        <div class="carousel-track" id="carousel-track">
+
+          <!-- Slide 1 — Alemania: Viviendas modulares para refugiados en Hannover -->
+          <div class="carousel-slide">
+            <img src="img/de-hannover.jpg" alt="Construcción de viviendas modulares para refugiados en Hannover, 2015" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge">
+                <img src="https://flagcdn.com/w40/de.png" alt="Alemania" />
+                Alemania
+              </div>
+              <h3 class="slide-title">Infraestructura de acogida a gran escala</h3>
+              <p class="slide-caption">En 2015, Alemania construyó en tiempo récord miles de módulos habitacionales para alojar a los solicitantes de asilo. Hannover, como muchas ciudades alemanas, debió ampliar su capacidad de alojamiento de urgencia.</p>
+            </div>
+          </div>
+
+          <!-- Slide 2 — Alemania: Centro de acogida en Bremen -->
+          <div class="carousel-slide">
+            <img src="img/de-bremen.jpg" alt="Centro de acogida para refugiados en Bremen, Alemania" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge">
+                <img src="https://flagcdn.com/w40/de.png" alt="Alemania" />
+                Alemania
+              </div>
+              <h3 class="slide-title">La política de puertas abiertas</h3>
+              <p class="slide-caption">Alemania recibió más de 850.000 solicitudes de asilo en 2015 y 2016. La frase de Angela Merkel —"Wir schaffen das" (lo lograremos)— sintetizó una apuesta histórica por la acogida que dividió a la sociedad alemana.</p>
+            </div>
+          </div>
+
+          <!-- Slide 3 — Francia: Campamento de Calais -->
+          <div class="carousel-slide">
+            <img src="img/fr-calais-camp.jpg" alt="Campamento de refugiados de Calais, Francia" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge">
+                <img src="https://flagcdn.com/w40/fr.png" alt="Francia" />
+                Francia
+              </div>
+              <h3 class="slide-title">La Jungle de Calais</h3>
+              <p class="slide-caption">El campamento informal de Calais llegó a albergar hasta 10.000 personas varadas en su intento de cruzar al Reino Unido. Francia lo desmanteló en octubre de 2016, pero la situación humanitaria continuó.</p>
+            </div>
+          </div>
+
+          <!-- Slide 4 — Francia: Vallado del puerto de Calais -->
+          <div class="carousel-slide">
+            <img src="img/fr-calais-fence.jpg" alt="Valla de seguridad en el puerto de Calais junto al campamento" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge">
+                <img src="https://flagcdn.com/w40/fr.png" alt="Francia" />
+                Francia
+              </div>
+              <h3 class="slide-title">El cerco de Calais</h3>
+              <p class="slide-caption">El puerto de Calais se convirtió en el símbolo de la tensión entre control fronterizo y derechos humanos. Las vallas de seguridad instaladas para impedir el paso a los camiones con destino a Reino Unido delimitaron el perímetro de "La Jungle".</p>
+            </div>
+          </div>
+
+          <!-- Slide 5 — Reino Unido: Marcha Refugees Welcome en Londres -->
+          <div class="carousel-slide">
+            <img src="img/uk-london-demo.jpg" alt="Marcha Refugees Welcome en Londres, 12 de septiembre de 2015" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge">
+                <img src="https://flagcdn.com/w40/gb.png" alt="Reino Unido" />
+                Reino Unido
+              </div>
+              <h3 class="slide-title">Solidaridad en las calles de Londres</h3>
+              <p class="slide-caption">El 12 de septiembre de 2015, más de 100.000 personas marcharon por Londres exigiendo al gobierno británico abrir las puertas a los refugiados de la crisis siria. Fue una de las mayores manifestaciones pro-asilo de la historia del país.</p>
+            </div>
+          </div>
+
+          <!-- Slide 6 — Europa: Refugiados cruzando el Mediterráneo -->
+          <div class="carousel-slide">
+            <img src="img/eu-lesvos.jpg" alt="Refugiados sirios e iraquíes llegando a la isla de Lesvos, Grecia, octubre 2015" loading="lazy" />
+            <div class="slide-content">
+              <div class="slide-badge" style="background:rgba(255,255,255,0.12)">
+                🌍 Europa
+              </div>
+              <h3 class="slide-title">El origen de la crisis</h3>
+              <p class="slide-caption">Cientos de miles de personas huyeron de Siria, Afganistán e Iraq entre 2014 y 2016. La mayoría cruzó el mar Egeo en embarcaciones precarias con destino a Grecia, para luego intentar llegar a Alemania, Francia o Reino Unido.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Anterior">
+        <svg viewBox="0 0 20 20"><path d="M13 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Siguiente">
+        <svg viewBox="0 0 20 20"><path d="M7 4l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="carousel-dots" id="carousel-dots"></div>
+      <p class="carousel-counter" id="carousel-counter">1 / 6</p>
+    </div>
+  </section>
+
   <!-- ── PAÍSES ── -->
   <section id="paises">
     <div class="section-inner">
-      <p class="eyebrow">Los tres países</p>
-      <h2 class="section-title">Tres respuestas, tres historias</h2>
-      <p class="section-body">
+      <p class="eyebrow fade-up">Los tres países</p>
+      <h2 class="section-title fade-up" data-delay="1">Tres respuestas, tres historias</h2>
+      <p class="section-body fade-up" data-delay="2">
         Seleccioná un país para explorar sus datos de solicitudes de asilo, composición por origen y estimaciones de flujos irregulares.
       </p>
 
       <div class="country-grid">
 
         <!-- ALEMANIA -->
-        <a href="alemania.html" class="country-card" style="--card-accent:#e8894d">
+        <a href="alemania.html" class="country-card fade-up" data-delay="1" style="--card-accent:#e8894d">
           <div class="cc-accent" style="background:#4a6fa5"></div>
           <div class="cc-body">
             <div class="cc-top">
@@ -393,7 +648,7 @@
             <div class="cc-spark" id="spark-de"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#4a6fa5">2,4 M</div>
+                <div class="cc-stat-num" style="color:#4a6fa5" data-target="2400000" data-suffix="">2,4 M</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -406,7 +661,7 @@
         </a>
 
         <!-- FRANCIA -->
-        <a href="francia.html" class="country-card" style="--card-accent:#4a82c4">
+        <a href="francia.html" class="country-card fade-up" data-delay="2" style="--card-accent:#4a82c4">
           <div class="cc-accent" style="background:#7a9e7e"></div>
           <div class="cc-body">
             <div class="cc-top">
@@ -418,7 +673,7 @@
             <div class="cc-spark" id="spark-fr"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#7a9e7e">525 K</div>
+                <div class="cc-stat-num" style="color:#7a9e7e" data-target="525000" data-suffix="">525 K</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -431,7 +686,7 @@
         </a>
 
         <!-- REINO UNIDO -->
-        <a href="reino-unido.html" class="country-card" style="--card-accent:#c45a5a">
+        <a href="reino-unido.html" class="country-card fade-up" data-delay="3" style="--card-accent:#c45a5a">
           <div class="cc-accent" style="background:#c47b4a"></div>
           <div class="cc-body">
             <div class="cc-top">
@@ -443,7 +698,7 @@
             <div class="cc-spark" id="spark-uk"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#c47b4a">323 K</div>
+                <div class="cc-stat-num" style="color:#c47b4a" data-target="323000" data-suffix="">323 K</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -462,6 +717,7 @@
   <div id="tooltip"></div>
 
   <script>
+    /* ── DATA ── */
     const data = [
       {year:2008, de:21720,  fr:17940, uk:30210},
       {year:2009, de:24680,  fr:18740, uk:24970},
@@ -491,7 +747,7 @@
     const fmt  = d3.format(',');
     const fmtK = v => v >= 1000 ? d3.format('.0f')(v/1000)+'K' : v;
 
-    /* ── Main line chart ── */
+    /* ── MAIN LINE CHART ── */
     function drawChart() {
       const container = document.getElementById('line-chart');
       const W = container.clientWidth || 900;
@@ -514,27 +770,23 @@
       const yMax   = d3.max(data, d => Math.max(d.de, d.fr, d.uk));
       const yScale = d3.scaleLinear().domain([0, yMax * 1.18]).range([iH, 0]);
 
-      // Grid
       g.append('g')
         .call(d3.axisLeft(yScale).ticks(5).tickSize(-iW).tickFormat(''))
         .call(ax => ax.select('.domain').remove())
         .call(ax => ax.selectAll('line').attr('stroke','#ebebeb').attr('stroke-dasharray','3,3'));
 
-      // X axis
       g.append('g').attr('transform', `translate(0,${iH})`)
         .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format('d')))
         .call(ax => ax.select('.domain').attr('stroke','#e0e0e0'))
         .call(ax => ax.selectAll('line').attr('stroke','#e0e0e0'))
         .call(ax => ax.selectAll('text').attr('fill','#aaa').style('font-size','11px'));
 
-      // Y axis
       g.append('g')
         .call(d3.axisLeft(yScale).ticks(5).tickFormat(fmtK))
         .call(ax => ax.select('.domain').remove())
         .call(ax => ax.selectAll('line').remove())
         .call(ax => ax.selectAll('text').attr('fill','#aaa').style('font-size','11px'));
 
-      // Y label
       g.append('text')
         .attr('transform','rotate(-90)')
         .attr('x', -iH/2).attr('y', -50)
@@ -543,7 +795,6 @@
         .style('font-size','10px')
         .text('solicitudes anuales');
 
-      // Lines + end labels
       const line = d3.line()
         .x(d => xScale(d.year))
         .y(d => yScale(d.value))
@@ -555,7 +806,6 @@
           .attr('fill','none').attr('stroke', s.color)
           .attr('stroke-width', 2).attr('d', line);
 
-        // End-of-line label
         const last = pts[pts.length - 1];
         g.append('text')
           .attr('x', xScale(last.year) + 6)
@@ -566,7 +816,6 @@
           .text(s.label === 'Alemania' ? 'DE' : s.label === 'Francia' ? 'FR' : 'UK');
       });
 
-      // Peak annotation — Alemania 2016
       const peak = data.find(d => d.year === 2016);
       const px = xScale(2016), py = yScale(peak.de);
       g.append('circle').attr('cx',px).attr('cy',py).attr('r',4)
@@ -577,7 +826,6 @@
         .style('font-size','11px').style('font-weight','600')
         .text('587K');
 
-      // Crisis vertical line
       const x15 = xScale(2015);
       g.append('line')
         .attr('x1',x15).attr('x2',x15).attr('y1',0).attr('y2',iH)
@@ -587,7 +835,6 @@
         .attr('fill','#bbb').style('font-size','10px')
         .text('Crisis Siria');
 
-      // Hover
       const tooltip = document.getElementById('tooltip');
       const vline = g.append('line')
         .attr('y1',0).attr('y2',iH)
@@ -623,7 +870,7 @@
         });
     }
 
-    /* ── Sparklines ── */
+    /* ── SPARKLINES ── */
     function drawSpark(containerId, key, color) {
       const el = document.getElementById(containerId);
       if (!el) return;
@@ -641,31 +888,141 @@
         .append('svg').attr('width', W).attr('height', H);
       const g = svg.append('g').attr('transform', `translate(${pad.l},${pad.t})`);
 
-      // Area fill
       const area = d3.area()
         .x((d,i) => xS(i)).y0(iH).y1(d => yS(d))
         .curve(d3.curveMonotoneX);
       g.append('path').datum(vals)
         .attr('fill', color).attr('opacity', 0.12).attr('d', area);
 
-      // Line
-      const line = d3.line()
+      const lineFn = d3.line()
         .x((d,i) => xS(i)).y(d => yS(d))
         .curve(d3.curveMonotoneX);
       g.append('path').datum(vals)
         .attr('fill','none').attr('stroke', color)
-        .attr('stroke-width', 1.5).attr('d', line);
+        .attr('stroke-width', 1.5).attr('d', lineFn);
     }
 
+    /* ── INTERSECTION OBSERVER (fade-up) ── */
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+
+    /* ── COUNTER ANIMATION ── */
+    function animateCounter(el) {
+      if (el.dataset.counted) return;
+      el.dataset.counted = '1';
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1400;
+      const start = performance.now();
+
+      function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const val = target * ease;
+
+        if (target >= 1000000) {
+          el.textContent = (val / 1000000).toFixed(1) + ' M';
+        } else {
+          el.textContent = Math.round(val / 1000) + ' K';
+        }
+
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.cc-stat-num[data-target]').forEach(el => counterObserver.observe(el));
+
+    /* ── CAROUSEL ── */
+    const track    = document.getElementById('carousel-track');
+    const dotsWrap = document.getElementById('carousel-dots');
+    const counter  = document.getElementById('carousel-counter');
+    const slides   = Array.from(track.querySelectorAll('.carousel-slide'));
+    const total    = slides.length;
+    let current = 0;
+    let autoTimer;
+
+    // Activate first slide
+    slides[0].classList.add('active');
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Slide ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function updateDots() {
+      dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+    }
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      current = (index + total) % total;
+      slides[current].classList.add('active');
+      updateDots();
+      counter.textContent = `${current + 1} / ${total}`;
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    document.getElementById('carousel-next').addEventListener('click', () => { next(); resetAuto(); });
+    document.getElementById('carousel-prev').addEventListener('click', () => { prev(); resetAuto(); });
+
+    function startAuto() {
+      autoTimer = setInterval(next, 7000);
+    }
+    function resetAuto() {
+      clearInterval(autoTimer);
+      startAuto();
+    }
+
+    // Pause on hover
+    const carouselEl = document.querySelector('.carousel');
+    carouselEl.addEventListener('mouseenter', () => clearInterval(autoTimer));
+    carouselEl.addEventListener('mouseleave', startAuto);
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { diff > 0 ? next() : prev(); resetAuto(); }
+    });
+
+    /* ── INIT ── */
     drawChart();
     drawSpark('spark-de', 'de', '#4a6fa5');
     drawSpark('spark-fr', 'fr', '#7a9e7e');
     drawSpark('spark-uk', 'uk', '#c47b4a');
+    startAuto();
+
     window.addEventListener('resize', () => {
       drawChart();
-      document.getElementById('spark-de').innerHTML = '';
-      document.getElementById('spark-fr').innerHTML = '';
-      document.getElementById('spark-uk').innerHTML = '';
+      ['spark-de','spark-fr','spark-uk'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
       drawSpark('spark-de', 'de', '#4a6fa5');
       drawSpark('spark-fr', 'fr', '#7a9e7e');
       drawSpark('spark-uk', 'uk', '#c47b4a');
