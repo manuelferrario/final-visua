@@ -535,9 +535,21 @@
     opacity:0; transition:opacity .5s;
   }
   #globe-country-badge.visible { opacity:1; }
-  #gcb-flag { width:48px; height:auto; border-radius:4px; margin:0 auto 10px; display:block; box-shadow:0 4px 20px rgba(0,0,0,.5); }
-  #gcb-name { font-family:var(--ff-d); font-size:clamp(24px,3vw,36px); font-weight:700; color:#1d1d1f; line-height:1; }
-  #gcb-num  { font-family:var(--ff-d); font-size:clamp(14px,1.8vw,18px); font-weight:600; margin-top:6px; }
+  #gcb-flag {
+    width:52px; height:auto; border-radius:5px;
+    margin:0 auto 10px; display:block;
+    box-shadow:0 3px 16px rgba(0,0,0,.32), 0 1px 4px rgba(0,0,0,.18);
+  }
+  #gcb-name {
+    font-family:var(--ff-d); font-size:clamp(22px,2.8vw,32px);
+    font-weight:700; color:#fff; line-height:1;
+    text-shadow: 0 1px 3px rgba(0,0,0,.5), 0 2px 12px rgba(0,0,0,.3);
+  }
+  #gcb-num {
+    font-family:var(--ff-d); font-size:clamp(13px,1.6vw,15px);
+    font-weight:500; margin-top:6px;
+    text-shadow: 0 1px 6px rgba(0,0,0,.4);
+  }
 
   /* Arc tooltip */
   #arc-tooltip {
@@ -563,14 +575,43 @@
   }
   .globe-panel.right { margin-left:auto; padding:0 56px 0 0; }
 
-  .gp-step { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(0,0,0,.35); margin-bottom:12px; }
-  .gp-title { font-family:var(--ff-d); font-size:clamp(22px,2.8vw,34px); font-weight:700; line-height:1.1; margin-bottom:12px; color:#1d1d1f; }
-  .gp-body  { font-size:14px; line-height:1.75; color:rgba(0,0,0,.55); margin-bottom:20px; }
-  .gp-stats { display:flex; gap:0; border-top:1px solid rgba(0,0,0,.1); border-bottom:1px solid rgba(0,0,0,.1); padding:16px 0; margin-bottom:0; }
-  .gp-stat  { display:flex; flex-direction:column; gap:3px; padding-right:24px; margin-right:24px; border-right:1px solid rgba(0,0,0,.1); }
+  /* Card box inside each panel */
+  .globe-panel > * { position:relative; z-index:1; }
+  .gp-card {
+    background:rgba(255,255,255,0.96);
+    border-radius:4px 14px 14px 4px;
+    padding:26px 28px 24px 32px;
+    box-shadow:0 6px 28px rgba(0,0,0,0.11), 0 1px 4px rgba(0,0,0,0.06);
+    border-left:4px solid #ccc;
+    position:relative;
+  }
+
+  /* Colored left border per country */
+  .gp-de .gp-card { border-left-color:#e8a84a; }
+  .gp-fr .gp-card { border-left-color:#6e9bc8; }
+  .gp-uk .gp-card { border-left-color:#c86e7a; }
+  /* Default (panel 0: no country) */
+  .globe-panel:not(.gp-de):not(.gp-fr):not(.gp-uk) .gp-card { border-left-color:#aaa; }
+
+  .gp-step {
+    font-size:10px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+    color:rgba(0,0,0,.32); margin-bottom:10px;
+  }
+  .gp-title {
+    font-family:var(--ff-d); font-size:clamp(22px,2.8vw,34px);
+    font-weight:700; line-height:1.05; margin-bottom:12px; color:#1d1d1f;
+    letter-spacing:-0.3px;
+  }
+  .gp-body  { font-size:13.5px; line-height:1.72; color:rgba(0,0,0,.52); margin-bottom:20px; }
+  .gp-stats {
+    display:flex; gap:0;
+    border-top:1px solid rgba(0,0,0,.08);
+    padding:14px 0 0; margin-bottom:0;
+  }
+  .gp-stat  { display:flex; flex-direction:column; gap:3px; padding-right:22px; margin-right:22px; border-right:1px solid rgba(0,0,0,.08); }
   .gp-stat:last-child { border-right:none; padding-right:0; margin-right:0; }
-  .gp-stat-num { font-family:var(--ff-d); font-size:clamp(18px,2.2vw,26px); font-weight:700; line-height:1; }
-  .gp-stat-lbl { font-size:10px; color:rgba(0,0,0,.4); text-transform:uppercase; letter-spacing:.05em; }
+  .gp-stat-num { font-family:var(--ff-d); font-size:clamp(18px,2.2vw,24px); font-weight:700; line-height:1; }
+  .gp-stat-lbl { font-size:10px; color:rgba(0,0,0,.38); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
 
   /* Color per country */
   .gp-de .gp-stat-num, .gp-de .gp-step { color:#e8a84a; }
@@ -621,82 +662,96 @@
 
       <!-- PANEL 0: intro -->
       <div class="globe-panel" data-step="0" data-country="">
-        <div class="gp-step">Contexto general</div>
-        <h2 class="gp-title">Tres países.<br>Tres historias<br>de flujos.</h2>
-        <p class="gp-body">Alemania, Francia y el Reino Unido son los tres principales receptores de inmigración de Europa occidental. Cada uno tiene un perfil de orígenes radicalmente distinto — producto de su historia colonial, su geografía y sus políticas migratorias.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num" style="color:#e8a84a">13,5 M</div><div class="gp-stat-lbl">Alemania</div></div>
-          <div class="gp-stat"><div class="gp-stat-num" style="color:#6e9bc8">5,5 M</div><div class="gp-stat-lbl">Francia</div></div>
-          <div class="gp-stat"><div class="gp-stat-num" style="color:#c86e7a">7,7 M</div><div class="gp-stat-lbl">Reino Unido</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Contexto general</div>
+          <h2 class="gp-title">Tres países.<br>Tres historias<br>de flujos.</h2>
+          <p class="gp-body">Alemania, Francia y el Reino Unido son los tres principales receptores de inmigración de Europa occidental. Cada uno tiene un perfil de orígenes radicalmente distinto — producto de su historia colonial, su geografía y sus políticas migratorias.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num" style="color:#e8a84a">13,5 M</div><div class="gp-stat-lbl">Alemania</div></div>
+            <div class="gp-stat"><div class="gp-stat-num" style="color:#6e9bc8">5,5 M</div><div class="gp-stat-lbl">Francia</div></div>
+            <div class="gp-stat"><div class="gp-stat-num" style="color:#c86e7a">7,7 M</div><div class="gp-stat-lbl">Reino Unido</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 1: Alemania intro -->
       <div class="globe-panel gp-de" data-step="1" data-country="de">
-        <div class="gp-step">Alemania · Zoom</div>
-        <h2 class="gp-title">Europa del Este<br>y Oriente Medio</h2>
-        <p class="gp-body">Los flujos hacia Alemania vienen principalmente de Europa del Este y Asia. Polonia, Turquía, Ucrania y Siria son los cuatro orígenes dominantes — dos generaciones de inmigración, dos razones distintas.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">1,52 M</div><div class="gp-stat-lbl">polacos</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">1,47 M</div><div class="gp-stat-lbl">turcos</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">1,26 M</div><div class="gp-stat-lbl">ucranianos</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Alemania · Zoom</div>
+          <h2 class="gp-title">Europa del Este<br>y Oriente Medio</h2>
+          <p class="gp-body">Los flujos hacia Alemania vienen principalmente de Europa del Este y Asia. Polonia, Turquía, Ucrania y Siria son los cuatro orígenes dominantes — dos generaciones de inmigración, dos razones distintas.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">1,52 M</div><div class="gp-stat-lbl">polacos</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">1,47 M</div><div class="gp-stat-lbl">turcos</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">1,26 M</div><div class="gp-stat-lbl">ucranianos</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 2: Alemania detail -->
       <div class="globe-panel right gp-de" data-step="2" data-country="de">
-        <div class="gp-step">Alemania · Detalle</div>
-        <h2 class="gp-title">27 países<br>de origen</h2>
-        <p class="gp-body">Siria (1,03 M), Kazajistán (963 K), Rumania (855 K)... el mapa de origen alemán cubre toda Europa, Asia Central y Oriente Medio. La diversidad de fuentes refleja décadas de política de asilo y acuerdos laborales.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">1,03 M</div><div class="gp-stat-lbl">sirios</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">963 K</div><div class="gp-stat-lbl">kazajos</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Alemania · Detalle</div>
+          <h2 class="gp-title">27 países<br>de origen</h2>
+          <p class="gp-body">Siria (1,03 M), Kazajistán (963 K), Rumania (855 K)... el mapa de origen alemán cubre toda Europa, Asia Central y Oriente Medio. La diversidad de fuentes refleja décadas de política de asilo y acuerdos laborales.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">1,03 M</div><div class="gp-stat-lbl">sirios</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">963 K</div><div class="gp-stat-lbl">kazajos</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 3: Francia intro -->
       <div class="globe-panel gp-fr" data-step="3" data-country="fr">
-        <div class="gp-step">Francia · Zoom</div>
-        <h2 class="gp-title">El mapa<br>del Imperio</h2>
-        <p class="gp-body">El mapa de flujos de Francia es también el mapa del antiguo Imperio francés. Los arcos más gruesos vienen del norte de África — Argelia, Marruecos, Túnez. El colonialismo creó rutas que el poscolonialismo no borró.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">1 M</div><div class="gp-stat-lbl">argelinos</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">932 K</div><div class="gp-stat-lbl">marroquíes</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">574 K</div><div class="gp-stat-lbl">portugueses</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Francia · Zoom</div>
+          <h2 class="gp-title">El mapa<br>del Imperio</h2>
+          <p class="gp-body">El mapa de flujos de Francia es también el mapa del antiguo Imperio francés. Los arcos más gruesos vienen del norte de África — Argelia, Marruecos, Túnez. El colonialismo creó rutas que el poscolonialismo no borró.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">1 M</div><div class="gp-stat-lbl">argelinos</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">932 K</div><div class="gp-stat-lbl">marroquíes</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">574 K</div><div class="gp-stat-lbl">portugueses</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 4: Francia detail -->
       <div class="globe-panel right gp-fr" data-step="4" data-country="fr">
-        <div class="gp-step">Francia · África subsahariana</div>
-        <h2 class="gp-title">33 países.<br>Todos hablan<br>francés.</h2>
-        <p class="gp-body">Junto al Magreb, África subsahariana tiene presencia masiva: Costa de Marfil, Senegal, Camerún, Mali. La francofonía es el denominador común. El lenguaje compartido funciona como imán migratorio.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">175 K</div><div class="gp-stat-lbl">marfileños</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">159 K</div><div class="gp-stat-lbl">senegaleses</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Francia · África subsahariana</div>
+          <h2 class="gp-title">33 países.<br>Todos hablan<br>francés.</h2>
+          <p class="gp-body">Junto al Magreb, África subsahariana tiene presencia masiva: Costa de Marfil, Senegal, Camerún, Mali. La francofonía es el denominador común. El lenguaje compartido funciona como imán migratorio.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">175 K</div><div class="gp-stat-lbl">marfileños</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">159 K</div><div class="gp-stat-lbl">senegaleses</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 5: UK intro -->
       <div class="globe-panel gp-uk" data-step="5" data-country="uk">
-        <div class="gp-step">Reino Unido · Zoom</div>
-        <h2 class="gp-title">El Imperio<br>que volvió<br>a casa</h2>
-        <p class="gp-body">El mapa del Reino Unido es el negativo de su Imperio. Los arcos más gruesos vienen de India, Pakistán, Bangladesh y Nigeria — todas antiguas colonias. La lengua compartida, el sistema legal, la familiaridad cultural: el Imperio creó las condiciones de su propia migración de retorno.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">965 K</div><div class="gp-stat-lbl">indios</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">841 K</div><div class="gp-stat-lbl">polacos</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">654 K</div><div class="gp-stat-lbl">pakistaníes</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Reino Unido · Zoom</div>
+          <h2 class="gp-title">El Imperio<br>que volvió<br>a casa</h2>
+          <p class="gp-body">El mapa del Reino Unido es el negativo de su Imperio. Los arcos más gruesos vienen de India, Pakistán, Bangladesh y Nigeria — todas antiguas colonias. La lengua compartida, el sistema legal, la familiaridad cultural: el Imperio creó las condiciones de su propia migración de retorno.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">965 K</div><div class="gp-stat-lbl">indios</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">841 K</div><div class="gp-stat-lbl">polacos</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">654 K</div><div class="gp-stat-lbl">pakistaníes</div></div>
+          </div>
         </div>
       </div>
 
       <!-- PANEL 6: UK detail -->
       <div class="globe-panel right gp-uk" data-step="6" data-country="uk">
-        <div class="gp-step">Reino Unido · Post-Brexit</div>
-        <h2 class="gp-title">Menos Europa,<br>más mundo</h2>
-        <p class="gp-body">El Brexit prometió reducir la inmigración. El sistema de puntos equiparó a europeos y no-europeos — y los arcos asiáticos y africanos se engrosaron. En 2022, el RU registró su mayor inmigración neta histórica.</p>
-        <div class="gp-stats">
-          <div class="gp-stat"><div class="gp-stat-num">558 K</div><div class="gp-stat-lbl">rumanos</div></div>
-          <div class="gp-stat"><div class="gp-stat-num">294 K</div><div class="gp-stat-lbl">nigerianos</div></div>
+        <div class="gp-card">
+          <div class="gp-step">Reino Unido · Post-Brexit</div>
+          <h2 class="gp-title">Menos Europa,<br>más mundo</h2>
+          <p class="gp-body">El Brexit prometió reducir la inmigración. El sistema de puntos equiparó a europeos y no-europeos — y los arcos asiáticos y africanos se engrosaron. En 2022, el RU registró su mayor inmigración neta histórica.</p>
+          <div class="gp-stats">
+            <div class="gp-stat"><div class="gp-stat-num">558 K</div><div class="gp-stat-lbl">rumanos</div></div>
+            <div class="gp-stat"><div class="gp-stat-num">294 K</div><div class="gp-stat-lbl">nigerianos</div></div>
+          </div>
         </div>
       </div>
 
@@ -951,19 +1006,27 @@
       .scale(Math.min(W,H)*0.38 * state.scale)
       .translate([W/2, H/2]);
 
-    // Ocean
+    // Ocean gradient
+    var cx = W/2, cy = H/2, r = Math.min(W,H)*0.38*state.scale;
+    var oceanGrad = ctx.createRadialGradient(cx-r*0.25, cy-r*0.25, 0, cx, cy, r);
+    oceanGrad.addColorStop(0, '#dbeefe');
+    oceanGrad.addColorStop(1, '#b8d8f0');
     ctx.beginPath(); path(sphere);
-    ctx.fillStyle='#c8dff0'; ctx.fill();
+    ctx.fillStyle = oceanGrad; ctx.fill();
+
+    // Globe border
+    ctx.beginPath(); path(sphere);
+    ctx.strokeStyle='rgba(120,170,210,0.35)'; ctx.lineWidth=1; ctx.stroke();
 
     // Graticule
     var grat = d3.geoGraticule()();
     ctx.beginPath(); path(grat);
-    ctx.strokeStyle='rgba(0,0,0,0.06)'; ctx.lineWidth=0.5; ctx.stroke();
+    ctx.strokeStyle='rgba(100,160,220,0.10)'; ctx.lineWidth=0.4; ctx.stroke();
 
     // Land
     ctx.beginPath(); path(geoData);
-    ctx.fillStyle='#e8eeea';
-    ctx.strokeStyle='rgba(100,130,110,0.25)'; ctx.lineWidth=0.5;
+    ctx.fillStyle='#f0f0ec';
+    ctx.strokeStyle='rgba(160,160,150,0.30)'; ctx.lineWidth=0.5;
     ctx.fill(); ctx.stroke();
 
     // Destination dots (always show the 3 countries)
