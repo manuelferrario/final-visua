@@ -327,6 +327,270 @@
   </div>
 </div>
 
+<!-- ══════════════ VIZ 03 · SOLICITUDES DE ASILO ══════════════ -->
+<style>
+  /* VIZ 03 */
+  .asylum-section{border-top:1px solid var(--hairline);background:var(--canvas);padding:64px 24px 0}
+  .asylum-inner{max-width:960px;margin:0 auto}
+  .asylum-chart-wrap{background:var(--parch);border-radius:18px;border:1px solid var(--hairline);padding:36px 36px 28px;margin:32px 0 0;position:relative;overflow:hidden}
+  .asylum-svg-container{width:100%;overflow:visible}
+  /* country toggles */
+  .asylum-toggles{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+  .ctoggle{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:9999px;border:1.5px solid transparent;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:#fff}
+  .ctoggle.de{color:#2563eb;border-color:#2563eb}
+  .ctoggle.fr{color:#16a34a;border-color:#16a34a}
+  .ctoggle.uk{color:#d97706;border-color:#d97706}
+  .ctoggle.off{opacity:.3;filter:grayscale(1)}
+  .ctoggle-dot{width:10px;height:10px;border-radius:50%}
+  /* annotation cards */
+  .asylum-annotations{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}
+  .ann-card{background:#fff;border-radius:14px;border:1px solid var(--hairline);padding:20px 22px;transition:box-shadow .2s,transform .2s;cursor:default}
+  .ann-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.09);transform:translateY(-2px)}
+  .ann-card-year{font-family:var(--ffd);font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+  .ann-card-event{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;color:var(--muted)}
+  .ann-card-body{font-size:13px;line-height:1.6;color:var(--muted)}
+  /* crosshair tooltip */
+  #asylum-tooltip{position:fixed;pointer-events:none;display:none;background:#1d1d1f;color:#fff;border-radius:12px;padding:12px 16px;font-size:12px;z-index:999;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+  #asylum-tooltip .at-year{font-family:var(--ffd);font-size:14px;font-weight:700;margin-bottom:8px;color:#fff}
+  #asylum-tooltip .at-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px}
+  #asylum-tooltip .at-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  #asylum-tooltip .at-val{font-weight:700;margin-left:auto;color:#a0c4ff}
+  /* key insight */
+  .asylum-insight{background:var(--black);border-radius:14px;padding:28px 32px;margin-top:16px;display:flex;gap:20px;align-items:flex-start}
+  .insight-icon{font-size:28px;line-height:1;flex-shrink:0}
+  .insight-body{font-size:14px;line-height:1.7;color:rgba(255,255,255,.6)}
+  .insight-body strong{color:#fff}
+</style>
+
+<div class="asylum-section">
+  <div class="asylum-inner">
+    <div class="viz-text" style="padding:0 0 0;max-width:100%">
+      <p class="eyebrow">Visualización 03 · Contexto europeo</p>
+      <h2 class="section-title">Solicitudes de asilo anuales (2008–2024)</h2>
+      <p class="section-body">Dieciséis años de datos revelan el impacto desigual de las grandes crisis migratorias sobre los tres principales receptores de Europa occidental. Alemania no solo lidera en volumen: su variabilidad es de otra escala.</p>
+    </div>
+
+    <div class="asylum-chart-wrap">
+      <div class="asylum-svg-container" id="asylum-svg-container"></div>
+    </div>
+
+    <div class="asylum-annotations">
+      <div class="ann-card">
+        <div class="ann-card-year" style="color:#2563eb">587K</div>
+        <div class="ann-card-event">Crisis Siria · 2016</div>
+        <div class="ann-card-body">El pico máximo europeo de la era moderna. Alemania absorbió más solicitudes que Francia y el Reino Unido <em>juntos</em> durante la decade completa.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-year" style="color:#d97706">Brexit · 2019</div>
+        <div class="ann-card-event">El muro invisible</div>
+        <div class="ann-card-body">Mientras Alemania y Francia crecían, el Brexit desaceleró las llegadas al Reino Unido. La promesa de "recuperar el control" redujo también la capacidad de procesamiento.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-year" style="color:#2563eb">2021–24</div>
+        <div class="ann-card-event">Segunda ola afgana y ucraniana</div>
+        <div class="ann-card-body">La caída de Kabul y la invasión rusa de Ucrania generan una segunda ola. Alemania recibe más de 350K solicitudes anuales, niveles que superan a 2014 antes del pico sirio.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="asylum-tooltip"></div>
+
+<script>
+(function(){
+  var DATA = {
+    years: [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024],
+    de:    [22085,33033,48589,53347,77651,127023,202834,476649,745545,222683,185853,165938,122170,190816,244132,351915,260000],
+    fr:    [42600,47625,52762,57337,61468,66251,64811,76165,84270,99330,122743,151069,93068,130672,137501,166500,158000],
+    uk:    [30840,29840,23730,26940,28174,29875,32344,38878,39737,34352,37783,44449,29456,56014,74751,84425,108138]
+  };
+
+  var COLORS = {de:'#2563eb', fr:'16a34a', uk:'#d97706'};
+  COLORS.fr = '#16a34a';
+  var active = {de:true, fr:true, uk:true};
+  var LABELS = {de:'Alemania', fr:'Francia', uk:'Reino Unido'};
+
+  function fmt(v){ if(v>=1000) return Math.round(v/1000)+'K'; return v; }
+
+  function draw(){
+    var container = document.getElementById('asylum-svg-container');
+    container.innerHTML = '';
+
+    var W = container.offsetWidth || 880;
+    var H = Math.round(W * 0.46);
+    var margin = {top:24, right:52, bottom:40, left:62};
+    var iw = W - margin.left - margin.right;
+    var ih = H - margin.top - margin.bottom;
+
+    var allVals = [];
+    ['de','fr','uk'].forEach(function(c){ if(active[c]) allVals = allVals.concat(DATA[c]); });
+    var maxVal = allVals.length ? Math.max.apply(null,allVals) : 600000;
+
+    var xScale = function(i){ return (i/(DATA.years.length-1))*iw; };
+    var yScale = function(v){ return ih - (v/maxVal)*ih; };
+
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns,'svg');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.setAttribute('width','100%');
+    svg.style.overflow='visible';
+
+    var g = document.createElementNS(ns,'g');
+    g.setAttribute('transform','translate('+margin.left+','+margin.top+')');
+    svg.appendChild(g);
+
+    // grid lines
+    [0,0.25,0.5,0.75,1].forEach(function(t){
+      var y=ih*t;
+      var line=document.createElementNS(ns,'line');
+      line.setAttribute('x1',0);line.setAttribute('x2',iw);
+      line.setAttribute('y1',y);line.setAttribute('y2',y);
+      line.setAttribute('stroke','#e0e0e0');line.setAttribute('stroke-dasharray','4 3');
+      g.appendChild(line);
+      var label=document.createElementNS(ns,'text');
+      label.setAttribute('x',-8);label.setAttribute('y',y+4);
+      label.setAttribute('text-anchor','end');label.setAttribute('font-size','11');label.setAttribute('fill','#9a9a9a');
+      label.textContent = fmt(Math.round(maxVal*(1-t)));
+      g.appendChild(label);
+    });
+
+    // x axis labels
+    DATA.years.forEach(function(yr,i){
+      if(yr % 2 !== 0) return;
+      var x=xScale(i);
+      var label=document.createElementNS(ns,'text');
+      label.setAttribute('x',x);label.setAttribute('y',ih+20);
+      label.setAttribute('text-anchor','middle');label.setAttribute('font-size','11');label.setAttribute('fill','#9a9a9a');
+      label.textContent=yr;
+      g.appendChild(label);
+    });
+
+    // crisis lines
+    var crises = [
+      {year:2015, label:'Crisis Siria', x: xScale(DATA.years.indexOf(2015))},
+      {year:2021, label:'Caída de Kabul', x: xScale(DATA.years.indexOf(2021))}
+    ];
+    crises.forEach(function(cr){
+      var line=document.createElementNS(ns,'line');
+      line.setAttribute('x1',cr.x);line.setAttribute('x2',cr.x);
+      line.setAttribute('y1',0);line.setAttribute('y2',ih);
+      line.setAttribute('stroke','#bbb');line.setAttribute('stroke-dasharray','5 4');line.setAttribute('stroke-width','1');
+      g.appendChild(line);
+      var label=document.createElementNS(ns,'text');
+      label.setAttribute('x',cr.x+5);label.setAttribute('y',14);
+      label.setAttribute('font-size','10');label.setAttribute('fill','#9a9a9a');label.setAttribute('font-weight','600');
+      label.textContent=cr.label;
+      g.appendChild(label);
+    });
+
+    // lines + area fills
+    ['uk','fr','de'].forEach(function(c){
+      if(!active[c]) return;
+      var col = COLORS[c];
+      var pts = DATA[c].map(function(v,i){ return [xScale(i), yScale(v)]; });
+
+      // area
+      var areaD = 'M'+pts[0][0]+','+ih+' ';
+      pts.forEach(function(p){ areaD+='L'+p[0]+','+p[1]+' '; });
+      areaD+='L'+pts[pts.length-1][0]+','+ih+' Z';
+      var area=document.createElementNS(ns,'path');
+      area.setAttribute('d',areaD);
+      area.setAttribute('fill',col);area.setAttribute('fill-opacity','0.07');
+      g.appendChild(area);
+
+      // line
+      var lineD = pts.map(function(p,i){ return (i===0?'M':'L')+p[0]+','+p[1]; }).join(' ');
+      var path=document.createElementNS(ns,'path');
+      path.setAttribute('d',lineD);path.setAttribute('fill','none');
+      path.setAttribute('stroke',col);path.setAttribute('stroke-width','2.5');
+      path.setAttribute('stroke-linejoin','round');path.setAttribute('stroke-linecap','round');
+      g.appendChild(path);
+
+      // end label
+      var last=pts[pts.length-1];
+      var lbl=document.createElementNS(ns,'text');
+      lbl.setAttribute('x',last[0]+8);lbl.setAttribute('y',last[1]+4);
+      lbl.setAttribute('font-size','12');lbl.setAttribute('font-weight','700');lbl.setAttribute('fill',col);
+      lbl.textContent=c.toUpperCase();
+      g.appendChild(lbl);
+
+      // peak dot for DE
+      if(c==='de'){
+        var peakIdx=DATA.de.indexOf(Math.max.apply(null,DATA.de));
+        var px=xScale(peakIdx), py=yScale(DATA.de[peakIdx]);
+        var dot=document.createElementNS(ns,'circle');
+        dot.setAttribute('cx',px);dot.setAttribute('cy',py);dot.setAttribute('r','6');
+        dot.setAttribute('fill',col);dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
+        g.appendChild(dot);
+        var peak=document.createElementNS(ns,'text');
+        peak.setAttribute('x',px+10);peak.setAttribute('y',py-8);
+        peak.setAttribute('font-size','12');peak.setAttribute('font-weight','700');peak.setAttribute('fill',col);
+        peak.textContent=fmt(DATA.de[peakIdx]);
+        g.appendChild(peak);
+      }
+    });
+
+    // interactive overlay
+    var overlay=document.createElementNS(ns,'rect');
+    overlay.setAttribute('x',0);overlay.setAttribute('y',0);
+    overlay.setAttribute('width',iw);overlay.setAttribute('height',ih);
+    overlay.setAttribute('fill','transparent');overlay.style.cursor='crosshair';
+
+    var vline=document.createElementNS(ns,'line');
+    vline.setAttribute('y1',0);vline.setAttribute('y2',ih);
+    vline.setAttribute('stroke','#999');vline.setAttribute('stroke-width','1');
+    vline.setAttribute('stroke-dasharray','3 3');
+    vline.style.display='none';
+    g.appendChild(vline);
+
+    var tipEl=document.getElementById('asylum-tooltip');
+
+    overlay.addEventListener('mousemove',function(e){
+      var rect=svg.getBoundingClientRect();
+      var rawX=e.clientX-rect.left-margin.left;
+      var idx=Math.round(rawX/iw*(DATA.years.length-1));
+      idx=Math.max(0,Math.min(DATA.years.length-1,idx));
+      var x=xScale(idx);
+      vline.setAttribute('x1',x);vline.setAttribute('x2',x);
+      vline.style.display='';
+      // tooltip
+      var rows='';
+      ['de','fr','uk'].forEach(function(c){
+        if(!active[c])return;
+        rows+='<div class="at-row"><span class="at-dot" style="background:'+COLORS[c]+'"></span>'+LABELS[c]+'<span class="at-val">'+fmt(DATA[c][idx])+'</span></div>';
+      });
+      tipEl.innerHTML='<div class="at-year">'+DATA.years[idx]+'</div>'+rows;
+      tipEl.style.display='block';
+      tipEl.style.left=(e.clientX+14)+'px';
+      tipEl.style.top=(e.clientY-14)+'px';
+    });
+    overlay.addEventListener('mouseleave',function(){
+      vline.style.display='none';
+      tipEl.style.display='none';
+    });
+    g.appendChild(overlay);
+
+    container.appendChild(svg);
+  }
+
+  draw();
+  window.addEventListener('resize', function(){ draw(); });
+
+  // toggles
+  document.getElementById('asylum-toggles').addEventListener('click',function(e){
+    var btn=e.target.closest('.ctoggle');
+    if(!btn)return;
+    var c=btn.dataset.c;
+    var onCount = Object.keys(active).filter(function(k){return active[k];}).length;
+    if(active[c] && onCount===1) return; // keep at least one
+    active[c]=!active[c];
+    btn.classList.toggle('off',!active[c]);
+    draw();
+  });
+})();
+</script>
+<!-- ══════════════ / VIZ 03 ══════════════ -->
+
 <style>
   .quiz-section{background:var(--parch);border-top:1px solid var(--hairline);padding:88px 24px 96px}
   .quiz-inner{max-width:640px;margin:0 auto;text-align:center}
