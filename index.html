@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inserción en el primer mundo</title>
+  <meta name="description" content="Un recorrido visual por la inmigración en Alemania, Francia y el Reino Unido: orígenes, cifras y flujos desde 2008 hasta hoy." />
+  <meta property="og:title" content="Inserción en el primer mundo" />
+  <meta property="og:description" content="Un recorrido visual por la inmigración en Alemania, Francia y el Reino Unido." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://flagcdn.com/w320/eu.png" />
+  <meta name="twitter:card" content="summary" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -177,11 +183,10 @@
       position: fixed;
       background: var(--surface-tile-1);
       color: var(--on-dark);
-      border-radius: 10px;
+      border-radius: 11px;
       padding: 14px 18px;
       font-family: var(--ff-t); font-size: 12px;
       pointer-events: none; display: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.22);
       z-index: 999; min-width: 160px;
     }
     #tooltip .tt-year {
@@ -371,43 +376,21 @@
     .country-card {
       display: flex; flex-direction: column;
       text-decoration: none;
-      background: var(--canvas-parchment);
-      border-radius: var(--r-lg);
-      border: 1px solid var(--hairline);
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.08);
       overflow: hidden;
-      transition: transform 0.28s cubic-bezier(.25,.46,.45,.94),
-                  box-shadow 0.28s cubic-bezier(.25,.46,.45,.94),
-                  border-color 0.28s;
+      transition: border-color 0.2s, transform 0.1s;
       position: relative;
       --card-accent: #999;
     }
 
-    .country-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--card-accent);
-      opacity: 0;
-      transition: opacity 0.28s;
-      pointer-events: none;
-      border-radius: inherit;
-    }
-
-    .country-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--card-accent);
-      box-shadow:
-        0 16px 48px rgba(0,0,0,0.10),
-        0 0 0 1px var(--card-accent),
-        0 6px 24px color-mix(in srgb, var(--card-accent) 30%, transparent);
-    }
-    .country-card:hover::after { opacity: 0.055; }
-    .country-card:active { transform: translateY(-2px) scale(0.99); }
+    .country-card:hover { border-color: var(--card-accent); }
+    .country-card:active { transform: scale(0.97); }
 
     .cc-accent {
       height: 3px; width: 100%; flex-shrink: 0;
-      transition: height 0.28s;
     }
-    .country-card:hover .cc-accent { height: 6px; }
 
     .cc-body { padding: 28px 28px 24px; flex: 1; display: flex; flex-direction: column; }
 
@@ -421,12 +404,6 @@
       border-radius: 4px;
       box-shadow: 0 1px 5px rgba(0,0,0,0.14);
       display: block;
-      transition: transform 0.28s cubic-bezier(.25,.46,.45,.94),
-                  box-shadow 0.28s;
-    }
-    .country-card:hover .cc-flag img {
-      transform: scale(1.10);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
     }
     .cc-num {
       font-family: var(--ff-t); font-size: 11px;
@@ -553,10 +530,10 @@
 
   /* Arc tooltip */
   #arc-tooltip {
-    position:absolute; background:rgba(255,255,255,.96); border:1px solid rgba(0,0,0,.1);
-    border-radius:10px; padding:10px 14px; font-size:12px; color:#1d1d1f;
+    position:absolute; background:rgba(255,255,255,.8); border:1px solid rgba(0,0,0,.08);
+    border-radius:11px; padding:10px 14px; font-size:12px; color:#1d1d1f;
     pointer-events:none; opacity:0; transition:opacity .2s; min-width:160px;
-    backdrop-filter:blur(8px); box-shadow:0 4px 20px rgba(0,0,0,.12);
+    backdrop-filter:blur(20px) saturate(180%);
   }
   #arc-tooltip.show { opacity:1; }
   #arc-tooltip .att-country { font-family:var(--ff-d); font-size:14px; font-weight:700; margin-bottom:4px; }
@@ -575,34 +552,26 @@
   }
   .globe-panel.right { margin-left:auto; padding:0 56px 0 0; }
 
-  /* Card box inside each panel */
+  /* Card box inside each panel — flat, hairline border, no decorative shadow (Apple HIG) */
   .globe-panel > * { position:relative; z-index:1; }
   .gp-card {
-    background:rgba(255,255,255,0.96);
-    border-radius:4px 14px 14px 4px;
-    padding:26px 28px 24px 32px;
-    box-shadow:0 6px 28px rgba(0,0,0,0.11), 0 1px 4px rgba(0,0,0,0.06);
-    border-left:4px solid #ccc;
+    background:#ffffff;
+    border-radius:18px;
+    padding:28px;
+    border:1px solid rgba(0,0,0,.08);
     position:relative;
   }
 
-  /* Colored left border per country */
-  .gp-de .gp-card { border-left-color:#e8a84a; }
-  .gp-fr .gp-card { border-left-color:#6e9bc8; }
-  .gp-uk .gp-card { border-left-color:#c86e7a; }
-  /* Default (panel 0: no country) */
-  .globe-panel:not(.gp-de):not(.gp-fr):not(.gp-uk) .gp-card { border-left-color:#aaa; }
-
   .gp-step {
-    font-size:10px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
-    color:rgba(0,0,0,.32); margin-bottom:10px;
+    font-size:12px; font-weight:600; letter-spacing:-0.12px; text-transform:none;
+    color:rgba(0,0,0,.48); margin-bottom:10px;
   }
   .gp-title {
     font-family:var(--ff-d); font-size:clamp(22px,2.8vw,34px);
-    font-weight:700; line-height:1.05; margin-bottom:12px; color:#1d1d1f;
-    letter-spacing:-0.3px;
+    font-weight:600; line-height:1.07; margin-bottom:12px; color:#1d1d1f;
+    letter-spacing:-0.374px;
   }
-  .gp-body  { font-size:13.5px; line-height:1.72; color:rgba(0,0,0,.52); margin-bottom:20px; }
+  .gp-body  { font-size:15px; line-height:1.5; color:rgba(0,0,0,.55); margin-bottom:20px; letter-spacing:-0.2px; }
   .gp-stats {
     display:flex; gap:0;
     border-top:1px solid rgba(0,0,0,.08);
@@ -610,13 +579,13 @@
   }
   .gp-stat  { display:flex; flex-direction:column; gap:3px; padding-right:22px; margin-right:22px; border-right:1px solid rgba(0,0,0,.08); }
   .gp-stat:last-child { border-right:none; padding-right:0; margin-right:0; }
-  .gp-stat-num { font-family:var(--ff-d); font-size:clamp(18px,2.2vw,24px); font-weight:700; line-height:1; }
+  .gp-stat-num { font-family:var(--ff-d); font-size:clamp(18px,2.2vw,24px); font-weight:600; line-height:1; }
   .gp-stat-lbl { font-size:10px; color:rgba(0,0,0,.38); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
 
-  /* Color per country */
-  .gp-de .gp-stat-num, .gp-de .gp-step { color:#e8a84a; }
-  .gp-fr .gp-stat-num, .gp-fr .gp-step { color:#6e9bc8; }
-  .gp-uk .gp-stat-num, .gp-uk .gp-step { color:#c86e7a; }
+  /* Per-country accent reserved for numeric emphasis only — not used as UI chrome */
+  .gp-de .gp-stat-num { color:#e8a84a; }
+  .gp-fr .gp-stat-num { color:#6e9bc8; }
+  .gp-uk .gp-stat-num { color:#c86e7a; }
 
   #globe-source { text-align:center; padding:48px 24px; font-size:11px; color:rgba(0,0,0,.35); letter-spacing:.04em; }
 

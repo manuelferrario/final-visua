@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alemania · Inserción en el primer mundo</title>
+  <meta name="description" content="Cómo Alemania se convirtió en el principal receptor de inmigración de Europa occidental: orígenes, asilo y cifras desde 1992 hasta hoy." />
+  <meta property="og:title" content="Alemania · Inserción en el primer mundo" />
+  <meta property="og:description" content="Cómo Alemania se convirtió en el principal receptor de inmigración de Europa occidental." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://flagcdn.com/w320/de.png" />
+  <meta name="twitter:card" content="summary" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -119,14 +125,14 @@
     .dpanel.active{opacity:0}
     .dpanel-flag{width:44px;height:auto;border-radius:3px;box-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:12px}
     .dpanel-country{font-family:var(--ffd);font-size:32px;font-weight:700;color:var(--ink);margin-bottom:4px}
-    .dpanel-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:16px}
+    .dpanel-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:9999px;margin-bottom:16px}
     .dpanel-tag.ue{background:#e8f0fb;color:#1a5cad} .dpanel-tag.noue{background:#fdeee8;color:#c94f28}
     .dpanel-stats{display:flex;gap:24px;margin-bottom:16px;flex-wrap:wrap}
     .dpanel-stat-num{font-family:var(--ffd);font-size:28px;font-weight:700;color:var(--accent);line-height:1}
     .dpanel-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
     .dpanel-body{font-size:14px;line-height:1.7;color:var(--muted)}
     /* TOOLTIP */
-    #map-tooltip{position:fixed;pointer-events:none;display:none;background:#1d1d1f;color:#fff;border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 4px 20px rgba(0,0,0,.22);z-index:999;min-width:140px}
+    #map-tooltip{position:fixed;pointer-events:none;display:none;background:#1d1d1f;color:#fff;border-radius:11px;padding:10px 14px;font-size:12px;z-index:999;min-width:140px}
     #map-tooltip .tt-state{font-family:var(--ffd);font-size:13px;font-weight:600;margin-bottom:4px}
     #map-tooltip .tt-val{color:#a0c4ff;font-weight:600}
     /* FOOTER */
@@ -169,9 +175,9 @@
 </div></nav>
 
 <div class="country-switcher"><div class="switcher-inner">
-  <a href="alemania.html" class="sw-item active"><img src="https://flagcdn.com/w40/de.png" alt="DE"> Alemania</a>
-  <a href="francia.html" class="sw-item"><img src="https://flagcdn.com/w40/fr.png" alt="FR"> Francia</a>
-  <a href="reino-unido.html" class="sw-item"><img src="https://flagcdn.com/w40/gb.png" alt="GB"> Reino Unido</a>
+  <a href="alemania.html" class="sw-item active"><img src="https://flagcdn.com/w40/de.png" alt=""> Alemania</a>
+  <a href="francia.html" class="sw-item"><img src="https://flagcdn.com/w40/fr.png" alt=""> Francia</a>
+  <a href="reino-unido.html" class="sw-item"><img src="https://flagcdn.com/w40/gb.png" alt=""> Reino Unido</a>
 </div></div>
 
 <section id="hero"><div class="hero-inner">
@@ -321,11 +327,119 @@
   </div>
 </div>
 
+<style>
+  .quiz-section{background:var(--parch);border-top:1px solid var(--hairline);padding:88px 24px 96px}
+  .quiz-inner{max-width:640px;margin:0 auto;text-align:center}
+  .quiz-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .quiz-title{font-family:var(--ffd);font-size:clamp(24px,3.2vw,36px);font-weight:700;line-height:1.15;color:var(--ink);margin-bottom:36px}
+  .quiz-card{background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.08);padding:28px;text-align:left}
+  .quiz-progress{display:flex;gap:6px;margin-bottom:24px}
+  .quiz-progress i{flex:1;height:4px;border-radius:9999px;background:rgba(0,0,0,.08);transition:background .3s}
+  .quiz-progress i.done{background:var(--accent)}
+  .quiz-qnum{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .quiz-question{font-family:var(--ffd);font-size:clamp(18px,2.2vw,24px);font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:22px}
+  .quiz-options{display:flex;flex-direction:column;gap:10px}
+  .quiz-option{display:block;width:100%;text-align:left;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:11px;padding:14px 16px;font-family:var(--fft);font-size:15px;letter-spacing:-0.2px;color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s,transform .1s}
+  .quiz-option:hover{border-color:var(--accent)}
+  .quiz-option:active{transform:scale(0.97)}
+  .quiz-option.correct{background:#e6f6ec;border-color:#3aa563;color:#1d6b3c;font-weight:600}
+  .quiz-option.wrong{background:#fbe9e8;border-color:#d9534f;color:#a3322e;font-weight:600}
+  .quiz-option[disabled]{cursor:default}
+  .quiz-result{text-align:center;padding:8px 0}
+  .quiz-result-score{font-family:var(--ffd);font-size:clamp(40px,6vw,64px);font-weight:800;color:var(--accent);line-height:1}
+  .quiz-result-of{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .quiz-result-msg{font-family:var(--ffd);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:22px;line-height:1.4}
+  .quiz-retry{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border:none;border-radius:9999px;padding:11px 22px;font-family:var(--fft);font-size:14px;font-weight:400;letter-spacing:-0.224px;cursor:pointer;transition:transform .1s}
+  .quiz-retry:active{transform:scale(0.95)}
+</style>
+
+<section class="quiz-section">
+  <div class="quiz-inner">
+    <p class="quiz-eyebrow">Pon a prueba lo aprendido</p>
+    <h2 class="quiz-title">¿Qué tanto sabés de la migración en Alemania?</h2>
+    <div class="quiz-card" id="quiz-card" aria-live="polite"></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var QUESTIONS=[
+    {q:'¿Cuál es el principal país de origen de los inmigrantes en Alemania?',opts:['Siria','Turquía','Polonia','Rumania'],correct:1},
+    {q:'¿Cuántos residentes extranjeros vivían en Alemania en 2023?',opts:['7,7 M','5,5 M','13,5 M','21 M'],correct:2},
+    {q:'¿Qué año marcó el lema "Wir schaffen das" y el pico histórico de solicitudes de asilo?',opts:['2008','2015','2019','2023'],correct:1}
+  ];
+  var idx=0, score=0, answered=false;
+  var card=document.getElementById('quiz-card');
+
+  function renderProgress(){
+    var html='<div class="quiz-progress">';
+    for(var i=0;i<QUESTIONS.length;i++) html+='<i class="'+(i<idx?'done':'')+'"></i>';
+    html+='</div>';
+    return html;
+  }
+
+  function renderQuestion(){
+    answered=false;
+    var item=QUESTIONS[idx];
+    var html=renderProgress();
+    html+='<div class="quiz-qnum">Pregunta '+(idx+1)+' de '+QUESTIONS.length+'</div>';
+    html+='<div class="quiz-question">'+item.q+'</div>';
+    html+='<div class="quiz-options">';
+    item.opts.forEach(function(opt,i){
+      html+='<button class="quiz-option" data-i="'+i+'">'+opt+'</button>';
+    });
+    html+='</div>';
+    card.innerHTML=html;
+    card.querySelectorAll('.quiz-option').forEach(function(btn){
+      btn.addEventListener('click',function(){ onAnswer(parseInt(btn.getAttribute('data-i'),10)); });
+    });
+  }
+
+  function onAnswer(i){
+    if(answered) return;
+    answered=true;
+    var item=QUESTIONS[idx];
+    var btns=card.querySelectorAll('.quiz-option');
+    btns.forEach(function(btn,bi){
+      btn.disabled=true;
+      if(bi===item.correct) btn.classList.add('correct');
+      else if(bi===i) btn.classList.add('wrong');
+    });
+    if(i===item.correct) score++;
+    setTimeout(function(){
+      idx++;
+      if(idx<QUESTIONS.length) renderQuestion();
+      else renderResult();
+    },900);
+  }
+
+  function renderResult(){
+    var msg;
+    if(score===QUESTIONS.length) msg='Sos un experto en migración alemana.';
+    else if(score>=Math.ceil(QUESTIONS.length/2)) msg='Nada mal — conocés bien el tema.';
+    else msg='Vale la pena volver a mirar los gráficos de arriba.';
+    var html=renderProgress();
+    html+='<div class="quiz-result">';
+    html+='<div class="quiz-result-score">'+score+'/'+QUESTIONS.length+'</div>';
+    html+='<div class="quiz-result-of">respuestas correctas</div>';
+    html+='<div class="quiz-result-msg">'+msg+'</div>';
+    html+='<button class="quiz-retry" id="quiz-retry-btn">Volver a intentar</button>';
+    html+='</div>';
+    card.innerHTML=html;
+    document.getElementById('quiz-retry-btn').addEventListener('click',function(){
+      idx=0; score=0; renderQuestion();
+    });
+  }
+
+  renderQuestion();
+})();
+</script>
+
 <footer><div class="foot-inner">
   <p>© 2026 Vilaseca · Botto · Ferrario · UTDT · Fuentes: Destatis, Eurostat, BAMF, UNHCR</p>
   <nav class="foot-nav">
-    <a href="francia.html"><img src="https://flagcdn.com/w40/fr.png" alt="FR"> Francia</a>
-    <a href="reino-unido.html"><img src="https://flagcdn.com/w40/gb.png" alt="GB"> Reino Unido</a>
+    <a href="francia.html"><img src="https://flagcdn.com/w40/fr.png" alt=""> Francia</a>
+    <a href="reino-unido.html"><img src="https://flagcdn.com/w40/gb.png" alt=""> Reino Unido</a>
   </nav>
 </div></footer>
 
