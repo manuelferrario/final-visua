@@ -88,7 +88,7 @@
     .big-donut-wrap{position:relative;width:260px;height:260px;flex-shrink:0}
     .big-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
     .big-donut-pct{display:block;font-family:var(--ffd);font-size:38px;font-weight:700;line-height:1;color:var(--accent)}
-    .big-donut-sub{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .big-donut-sub{display:block;font-size:11px;color:var(--accent);margin-top:3px}
     .big-donut-country{font-family:var(--ffd);font-size:20px;font-weight:700;color:var(--ink);text-align:center}
     .big-donut-total{font-size:12px;color:var(--muted);text-align:center}
     .donut-index{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;max-width:320px}
@@ -239,7 +239,7 @@
       <div class="big-donut-total" id="big-donut-total">104 K residentes</div>
       <div class="donut-index" id="donut-index"></div>
       <div class="donut-legend">
-        <div class="dl-item"><div class="dl-sq" style="background:#4a82c4"></div>Regular</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#d9d9d9"></div>Regular</div>
         <div class="dl-item"><div class="dl-sq" style="background:#1a5cad"></div>Irregular</div>
       </div>
     </div>
@@ -568,11 +568,11 @@ var po=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
 document.querySelectorAll('.spanel').forEach(function(p){po.observe(p);});
 // DONUT
 var DD=[{name:'Haití',flag:'ht',reg:77,irr:23,total:'104 K'},{name:'Túnez',flag:'tn',reg:81,irr:19,total:'391 K'},{name:'Argelia',flag:'dz',reg:84,irr:16,total:'1.004 K'},{name:'Marruecos',flag:'ma',reg:85,irr:15,total:'932 K'},{name:'Turquía',flag:'tr',reg:88,irr:12,total:'279 K'},{name:'Italia',flag:'it',reg:97,irr:3,total:'279 K'},{name:'Portugal',flag:'pt',reg:98,irr:2,total:'574 K'},{name:'España',flag:'es',reg:98,irr:2,total:'239 K'}];
-var CR='#4a82c4',CI='#1a5cad',cd=-1;
+var CR='#d9d9d9',CI='#4a82c4',cd=-1;
 function mkDonut(reg,irr){var ns='http://www.w3.org/2000/svg';var s=260;var svg=document.createElementNS(ns,'svg');svg.setAttribute('width',s);svg.setAttribute('height',s);svg.setAttribute('viewBox','0 0 '+s+' '+s);var cx=130,cy=130,R=117,r=75;[[reg,CR],[irr,CI]].reduce(function(st,pr){var pct=pr[0],col=pr[1];var a=(pct/100)*2*Math.PI,e=st+a,lg=a>Math.PI?1:0;var p=document.createElementNS(ns,'path');p.setAttribute('d','M'+(cx+R*Math.cos(st))+','+(cy+R*Math.sin(st))+' A'+R+','+R+',0,'+lg+',1,'+(cx+R*Math.cos(e))+','+(cy+R*Math.sin(e))+' L'+(cx+r*Math.cos(e))+','+(cy+r*Math.sin(e))+' A'+r+','+r+',0,'+lg+',0,'+(cx+r*Math.cos(st))+','+(cy+r*Math.sin(st))+' Z');p.setAttribute('fill',col);p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','2');svg.appendChild(p);return e;},-Math.PI/2);return svg;}
 var dpReader=document.getElementById('dpanel-reader');
 function setDpReader(i){var panels=document.querySelectorAll('.dpanel');if(!panels[i]||!dpReader)return;dpReader.style.opacity='0';var html=panels[i].innerHTML;setTimeout(function(){dpReader.innerHTML=html;dpReader.style.opacity='1';},180);}
-function udot(i){if(i===cd)return;cd=i;var d=DD[i];var w=document.getElementById('big-donut-wrap');w.innerHTML='';w.appendChild(mkDonut(d.reg,d.irr));var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.reg+'%</span><span class="big-donut-sub">regular</span>';w.appendChild(c);document.getElementById('big-donut-country').textContent=d.name;document.getElementById('big-donut-total').textContent=d.total+' residentes';document.querySelectorAll('.di-pip').forEach(function(p,j){p.classList.toggle('active',j===i);});setDpReader(i);}
+function udot(i){if(i===cd)return;cd=i;var d=DD[i];var w=document.getElementById('big-donut-wrap');w.innerHTML='';w.appendChild(mkDonut(d.reg,d.irr));var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.irr+'%</span><span class="big-donut-sub">irregular</span>';w.appendChild(c);document.getElementById('big-donut-country').textContent=d.name;document.getElementById('big-donut-total').textContent=d.total+' residentes';document.querySelectorAll('.di-pip').forEach(function(p,j){p.classList.toggle('active',j===i);});setDpReader(i);}
 var idx=document.getElementById('donut-index');
 DD.forEach(function(d,i){var pip=document.createElement('div');pip.className='di-pip';var img=document.createElement('img');img.src='https://flagcdn.com/w40/'+d.flag+'.png';img.alt=d.name;pip.appendChild(img);pip.addEventListener('click',function(){udot(i);});idx.appendChild(pip);});
 udot(0);

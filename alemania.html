@@ -109,7 +109,7 @@
     .big-donut-wrap{position:relative;width:260px;height:260px;flex-shrink:0;transition:transform .3s}
     .big-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
     .big-donut-pct{display:block;font-family:var(--ffd);font-size:38px;font-weight:700;line-height:1;color:var(--accent);transition:all .4s}
-    .big-donut-sub{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .big-donut-sub{display:block;font-size:11px;color:var(--accent);margin-top:3px}
     .big-donut-country{font-family:var(--ffd);font-size:20px;font-weight:700;color:var(--ink);text-align:center}
     .big-donut-total{font-size:12px;color:var(--muted);text-align:center}
     .donut-index{display:flex;flex-wrap:nowrap;gap:8px;justify-content:center;max-width:320px}
@@ -272,7 +272,7 @@
       <div class="big-donut-total" id="big-donut-total">411 K residentes</div>
       <div class="donut-index" id="donut-index"></div>
       <div class="donut-legend">
-        <div class="dl-item"><div class="dl-sq" style="background:#e8894d"></div>Regular</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#d9d9d9"></div>Regular</div>
         <div class="dl-item"><div class="dl-sq" style="background:#854F0B"></div>Irregular</div>
       </div>
     </div>
@@ -755,14 +755,14 @@ document.querySelectorAll('.spanel').forEach(function(p){po.observe(p);});
 
 // DONUT
 var DD=[{name:'Afganistán',flag:'af',reg:72,irr:28,total:'411 K'},{name:'Siria',flag:'sy',reg:78,irr:22,total:'975 K'},{name:'Turquía',flag:'tr',reg:85,irr:15,total:'1,48 M'},{name:'Iraq',flag:'iq',reg:82,irr:18,total:'381 K'},{name:'Ucrania',flag:'ua',reg:91,irr:9,total:'1,18 M'},{name:'Rumania',flag:'ro',reg:97,irr:3,total:'854 K'},{name:'Polonia',flag:'pl',reg:98,irr:2,total:'773 K'},{name:'Italia',flag:'it',reg:98,irr:2,total:'381 K'}];
-var CR='#e8894d',CI='#854F0B',cd=-1;
+var CR='#d9d9d9',CI='#e8894d',cd=-1;
 function mkDonut(reg,irr,size){var ns='http://www.w3.org/2000/svg';var svg=document.createElementNS(ns,'svg');var s=size||200;svg.setAttribute('width',s);svg.setAttribute('height',s);svg.setAttribute('viewBox','0 0 '+s+' '+s);var cx=s/2,cy=s/2,R=s*0.45,r=s*0.29;[[reg,CR],[irr,CI]].reduce(function(st,pr){var pct=pr[0],col=pr[1];var a=(pct/100)*2*Math.PI,e=st+a,lg=a>Math.PI?1:0;var p=document.createElementNS(ns,'path');p.setAttribute('d','M'+(cx+R*Math.cos(st))+','+(cy+R*Math.sin(st))+' A'+R+','+R+',0,'+lg+',1,'+(cx+R*Math.cos(e))+','+(cy+R*Math.sin(e))+' L'+(cx+r*Math.cos(e))+','+(cy+r*Math.sin(e))+' A'+r+','+r+',0,'+lg+',0,'+(cx+r*Math.cos(st))+','+(cy+r*Math.sin(st))+' Z');p.setAttribute('fill',col);p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','2');svg.appendChild(p);return e;},-Math.PI/2);return svg;}
 var dpReader=document.getElementById('dpanel-reader');
 function setDpReader(i){var panels=document.querySelectorAll('.dpanel');if(!panels[i]||!dpReader)return;dpReader.style.opacity='0';var html=panels[i].innerHTML;setTimeout(function(){dpReader.innerHTML=html;dpReader.style.opacity='1';},180);}
 function udot(i){if(i===cd)return;cd=i;var d=DD[i];
   var w=document.getElementById('big-donut-wrap');w.innerHTML='';
   var svg=mkDonut(d.reg,d.irr,260);w.appendChild(svg);
-  var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.reg+'%</span><span class="big-donut-sub">regular</span>';w.appendChild(c);
+  var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.irr+'%</span><span class="big-donut-sub">irregular</span>';w.appendChild(c);
   document.getElementById('big-donut-country').textContent=d.name;
   document.getElementById('big-donut-total').textContent=d.total+' residentes';
   document.querySelectorAll('.di-pip').forEach(function(p,j){p.classList.toggle('active',j===i);});

@@ -105,7 +105,7 @@
     .big-donut-wrap{position:relative;width:260px;height:260px;flex-shrink:0}
     .big-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
     .big-donut-pct{display:block;font-family:var(--ffd);font-size:38px;font-weight:700;line-height:1;color:var(--accent)}
-    .big-donut-sub{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .big-donut-sub{display:block;font-size:11px;color:var(--accent);margin-top:3px}
     .big-donut-country{font-family:var(--ffd);font-size:20px;font-weight:700;color:var(--ink);text-align:center}
     .big-donut-total{font-size:12px;color:var(--muted);text-align:center}
     .donut-index{display:flex;flex-wrap:nowrap;gap:8px;justify-content:center;max-width:320px}
@@ -237,21 +237,71 @@
 
 
 <!-- VIZ PICTOGRAMA -->
+<style>
+  .pict-icon{cursor:default;position:relative;}
+  .pict-icon svg{width:100%;height:auto;display:block;fill:rgba(0,0,0,.10);transition:fill .18s ease,transform .18s ease;}
+  .pict-icon.on svg{fill:var(--accent);}
+  .pict-icon.just-changed svg{transform:scale(1.22);}
+  #pict-tooltip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:6px 10px;border-radius:7px;z-index:999;opacity:0;transition:opacity .15s;white-space:nowrap;line-height:1.5;}
+  #pict-big-num{font-family:var(--ffd);font-size:clamp(64px,9vw,110px);font-weight:700;color:var(--accent);line-height:1;transition:color .3s;}
+
+  /* Timeline scrubber */
+  #pict-timeline{width:100%;max-width:680px;margin:0 auto 32px;padding:0 12px;box-sizing:border-box;}
+  #pict-year-display{text-align:center;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:16px;}
+  #pict-year-num{font-family:var(--ffd);font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--ink);line-height:1;}
+  #pict-year-event{font-size:12px;color:var(--accent);font-weight:600;margin-top:4px;min-height:16px;transition:opacity .3s;}
+  #pict-play-btn{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .15s;}
+  #pict-play-btn:hover{background:var(--accent);}
+  #pict-play-btn:hover svg{fill:#fff;}
+  #pict-play-btn:active{transform:scale(.93);}
+  #pict-play-btn svg{fill:var(--accent);transition:fill .2s;}
+
+  .pict-slider-wrap{position:relative;padding:8px 0 28px;}
+  #pict-slider{-webkit-appearance:none;appearance:none;width:100%;height:2px;border-radius:2px;background:var(--hairline);outline:none;cursor:pointer;}
+  #pict-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .15s;margin-top:-9px;}
+  #pict-slider::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.2);}
+  #pict-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:grab;border:none;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+  #pict-slider::-webkit-slider-runnable-track{height:2px;border-radius:2px;background:var(--hairline);}
+  #pict-slider::-moz-range-track{height:2px;border-radius:2px;background:var(--hairline);}
+
+  .pict-tick-row{display:flex;justify-content:space-between;margin-top:6px;}
+  .pict-tick{font-size:10px;color:var(--muted);cursor:pointer;transition:color .2s,font-weight .2s;}
+  .pict-tick:hover,.pict-tick.active{color:var(--accent);font-weight:700;}
+</style>
+
 <div class="flourish-section">
   <div class="viz-text">
-    <p class="eyebrow">Visualización 02 · Cruce del Canal</p>
-    <h2 class="section-title">Llegadas irregulares por pequeñas embarcaciones</h2>
-    <p class="section-body">Cada figura representa una fracción de las personas que cruzaron el Canal en condiciones precarias.</p>
+    <p class="eyebrow">Visualización 02 · Inmigración en el tiempo</p>
+    <h2 class="section-title">¿Cuántos nacieron fuera del Reino Unido?</h2>
+    <p class="section-body">Arrastrá la línea de tiempo para ver cómo cambió la proporción desde la posguerra hasta hoy.</p>
   </div>
-  <div id="pict-section" style="width:100%;height:100vh;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:clamp(20px,4vw,60px);padding:24px;box-sizing:border-box;">
-    <div id="pictogram-grid" style="display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,0.55vmin,7px);width:min(calc(100vh - 160px),50vw);flex-shrink:0;"></div>
+
+  <div id="pict-timeline">
+    <div id="pict-year-display">
+      <button id="pict-play-btn" title="Reproducir">
+        <svg id="pict-play-icon" viewBox="0 0 24 24" width="16" height="16"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div>
+        <div id="pict-year-num">1951</div>
+        <div id="pict-year-event"></div>
+      </div>
+    </div>
+    <div class="pict-slider-wrap">
+      <input type="range" id="pict-slider" min="0" max="7" step="1" value="0">
+    </div>
+    <div class="pict-tick-row" id="pict-tick-row"></div>
+  </div>
+
+  <div id="pict-section" style="width:100%;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:clamp(20px,4vw,60px);padding:0 24px 40px;box-sizing:border-box;">
+    <div id="pictogram-grid" style="display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(3px,0.55vmin,7px);width:min(calc(100vh - 200px),50vw);flex-shrink:0;"></div>
     <div style="max-width:260px;flex-shrink:0;">
-      <div style="font-family:var(--ffd);font-size:clamp(64px,9vw,120px);font-weight:700;color:var(--accent);line-height:1;">17</div>
+      <div id="pict-big-num">4</div>
       <div style="font-family:var(--ffd);font-size:clamp(14px,1.5vw,18px);font-weight:600;color:var(--ink);margin:8px 0 12px;line-height:1.3;">de cada 100 personas en el Reino Unido nacieron en el extranjero</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.6;">Cada ícono representa una persona. Los <span style="color:var(--accent);font-weight:600;">17 rojos</span> son nacidos fuera del RU.</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;">Cada ícono representa una persona. Los <span id="pict-label-span" style="color:var(--accent);font-weight:600;"></span> son nacidos fuera del RU.</div>
     </div>
   </div>
 </div>
+<div id="pict-tooltip"></div>
 
 
 <!-- VIZ 03 DONUTS -->
@@ -268,7 +318,7 @@
       <div class="big-donut-total" id="big-donut-total">185 K residentes</div>
       <div class="donut-index" id="donut-index"></div>
       <div class="donut-legend">
-        <div class="dl-item"><div class="dl-sq" style="background:#c45a5a"></div>Regular</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#d9d9d9"></div>Regular</div>
         <div class="dl-item"><div class="dl-sq" style="background:#0F6E56"></div>Irregular</div>
       </div>
     </div>
@@ -488,11 +538,11 @@ var po=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
 document.querySelectorAll('.spanel').forEach(function(p){po.observe(p);});
 // DONUT
 var DD=[{name:'Afganistán',flag:'af',reg:74,irr:26,total:'185 K'},{name:'Pakistán',flag:'pk',reg:82,irr:18,total:'780 K'},{name:'Nigeria',flag:'ng',reg:83,irr:17,total:'312 K'},{name:'Bangladesh',flag:'bd',reg:85,irr:15,total:'445 K'},{name:'India',flag:'in',reg:91,irr:9,total:'960 K'},{name:'Rumania',flag:'ro',reg:95,irr:5,total:'1.135 K'},{name:'Polonia',flag:'pl',reg:96,irr:4,total:'850 K'},{name:'Irlanda',flag:'ie',reg:99,irr:1,total:'425 K'}];
-var CR='#c45a5a',CI='#0F6E56',cd=-1;
+var CR='#d9d9d9',CI='#c45a5a',cd=-1;
 function mkDonut(reg,irr){var ns='http://www.w3.org/2000/svg';var s=260;var svg=document.createElementNS(ns,'svg');svg.setAttribute('width',s);svg.setAttribute('height',s);svg.setAttribute('viewBox','0 0 '+s+' '+s);var cx=130,cy=130,R=117,r=75;[[reg,CR],[irr,CI]].reduce(function(st,pr){var pct=pr[0],col=pr[1];var a=(pct/100)*2*Math.PI,e=st+a,lg=a>Math.PI?1:0;var p=document.createElementNS(ns,'path');p.setAttribute('d','M'+(cx+R*Math.cos(st))+','+(cy+R*Math.sin(st))+' A'+R+','+R+',0,'+lg+',1,'+(cx+R*Math.cos(e))+','+(cy+R*Math.sin(e))+' L'+(cx+r*Math.cos(e))+','+(cy+r*Math.sin(e))+' A'+r+','+r+',0,'+lg+',0,'+(cx+r*Math.cos(st))+','+(cy+r*Math.sin(st))+' Z');p.setAttribute('fill',col);p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','2');svg.appendChild(p);return e;},-Math.PI/2);return svg;}
 var dpReader=document.getElementById('dpanel-reader');
 function setDpReader(i){var panels=document.querySelectorAll('.dpanel');if(!panels[i]||!dpReader)return;dpReader.style.opacity='0';var html=panels[i].innerHTML;setTimeout(function(){dpReader.innerHTML=html;dpReader.style.opacity='1';},180);}
-function udot(i){if(i===cd)return;cd=i;var d=DD[i];var w=document.getElementById('big-donut-wrap');w.innerHTML='';w.appendChild(mkDonut(d.reg,d.irr));var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.reg+'%</span><span class="big-donut-sub">regular</span>';w.appendChild(c);document.getElementById('big-donut-country').textContent=d.name;document.getElementById('big-donut-total').textContent=d.total+' residentes';document.querySelectorAll('.di-pip').forEach(function(p,j){p.classList.toggle('active',j===i);});setDpReader(i);}
+function udot(i){if(i===cd)return;cd=i;var d=DD[i];var w=document.getElementById('big-donut-wrap');w.innerHTML='';w.appendChild(mkDonut(d.reg,d.irr));var c=document.createElement('div');c.className='big-donut-center';c.innerHTML='<span class="big-donut-pct">'+d.irr+'%</span><span class="big-donut-sub">irregular</span>';w.appendChild(c);document.getElementById('big-donut-country').textContent=d.name;document.getElementById('big-donut-total').textContent=d.total+' residentes';document.querySelectorAll('.di-pip').forEach(function(p,j){p.classList.toggle('active',j===i);});setDpReader(i);}
 var idx=document.getElementById('donut-index');
 DD.forEach(function(d,i){var pip=document.createElement('div');pip.className='di-pip';var img=document.createElement('img');img.src='https://flagcdn.com/w40/'+d.flag+'.png';img.alt=d.name;pip.appendChild(img);pip.addEventListener('click',function(){udot(i);});idx.appendChild(pip);});
 udot(0);
@@ -550,18 +600,175 @@ document.querySelectorAll('.visual-break').forEach(function(vb){
   });
 });
 
-// PICTOGRAM 17/100
+// PICTOGRAM timeline scrubber
 (function(){
-  var HIGHLIGHT=17,TOTAL=100;
+  var TOTAL=100;
   var SVG='<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>';
+
+  // Historical data points
+  var DATA=[
+    {year:1951, val:4,  event:'Posguerra: primeras oleadas del Imperio'},
+    {year:1961, val:5,  event:'Llegada masiva desde el Caribe y Asia del Sur'},
+    {year:1971, val:6,  event:'Commonwealth Immigrants Act limita la entrada'},
+    {year:1981, val:7,  event:'Disturbios de Brixton — tensión racial en auge'},
+    {year:1991, val:7,  event:'Fin de la Guerra Fría · nuevos flujos de Europa del Este'},
+    {year:2001, val:9,  event:'Ampliación de la UE se acerca · inmigración crece'},
+    {year:2011, val:13, event:'Post-2004: Polonia, Lituania, Rumania se incorporan'},
+    {year:2023, val:17, event:'Récord histórico · debate Brexit no cierra la puerta'}
+  ];
+
   var grid=document.getElementById('pictogram-grid');
-  if(!grid)return;
+  var tt=document.getElementById('pict-tooltip');
+  var bigNum=document.getElementById('pict-big-num');
+  var labelSpan=document.getElementById('pict-label-span');
+  var yearNum=document.getElementById('pict-year-num');
+  var yearEvent=document.getElementById('pict-year-event');
+  var slider=document.getElementById('pict-slider');
+  var tickRow=document.getElementById('pict-tick-row');
+  if(!grid||!slider)return;
+
+  var currentVal=0;
+  var icons=[];
+  var animFrame=null;
+
+  // Build grid
   for(var i=0;i<TOTAL;i++){
     var s=document.createElement('span');
-    s.className='pict-icon'+(i<HIGHLIGHT?' on':'');
+    s.className='pict-icon';
     s.innerHTML=SVG;
+    s.dataset.idx=i;
     grid.appendChild(s);
+    icons.push(s);
   }
+
+  // Build tick labels
+  DATA.forEach(function(d,i){
+    var t=document.createElement('span');
+    t.className='pict-tick';
+    t.textContent=d.year;
+    t.addEventListener('click',function(){slider.value=i;onSlide();});
+    tickRow.appendChild(t);
+  });
+
+  // Tooltip
+  grid.addEventListener('mousemove',function(e){
+    var el=e.target.closest('.pict-icon');
+    if(!el){tt.style.opacity='0';return;}
+    var idx=+el.dataset.idx;
+    tt.style.opacity='1';
+    tt.style.left=(e.clientX+14)+'px';
+    tt.style.top=(e.clientY-40)+'px';
+    tt.innerHTML=idx<currentVal
+      ? '<strong>Nacido en el extranjero</strong>'
+      : '<strong>Nacido en el Reino Unido</strong>';
+  });
+  grid.addEventListener('mouseleave',function(){tt.style.opacity='0';});
+
+  // Smooth count-up/down for the big number
+  var countTarget=0,countFrom=0,countStart=0,counting=false;
+  function countTo(target){
+    countFrom=+(bigNum.textContent)||0;
+    countTarget=target;
+    countStart=performance.now();
+    if(!counting){counting=true;rafCount();}
+  }
+  function rafCount(){
+    var p=Math.min((performance.now()-countStart)/350,1);
+    var e=1-Math.pow(1-p,3);
+    bigNum.textContent=Math.round(countFrom+(countTarget-countFrom)*e);
+    if(p<1)requestAnimationFrame(rafCount);
+    else{bigNum.textContent=countTarget;counting=false;}
+  }
+
+  // Update icons — instant toggle for scrubbing feel
+  function renderIcons(val){
+    var prev=currentVal;
+    currentVal=val;
+    icons.forEach(function(ic,i){
+      var on=i<val;
+      var wasOn=ic.classList.contains('on');
+      ic.classList.toggle('on',on);
+      // micro-bounce only on the boundary icon
+      if(on!==wasOn && i===val-1){
+        ic.classList.add('just-changed');
+        setTimeout(function(){ic.classList.remove('just-changed');},200);
+      }
+    });
+    labelSpan.textContent=val+' de cada 100';
+  }
+
+  // Update tick highlights
+  function updateTicks(idx){
+    document.querySelectorAll('.pict-tick').forEach(function(t,i){
+      t.classList.toggle('active',i===idx);
+    });
+  }
+
+  function onSlide(){
+    var idx=+slider.value;
+    var d=DATA[idx];
+    yearNum.textContent=d.year;
+    yearEvent.textContent=d.event;
+    countTo(d.val);
+    renderIcons(d.val);
+    updateTicks(idx);
+  }
+
+  slider.addEventListener('input',onSlide);
+
+  // Play button
+  var playBtn=document.getElementById('pict-play-btn');
+  var playIcon=document.getElementById('pict-play-icon');
+  var playTimer=null;
+  var isPlaying=false;
+
+  var PAUSE_SVG='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+  var PLAY_SVG='<path d="M8 5v14l11-7z"/>';
+
+  function stopPlay(){
+    isPlaying=false;
+    clearTimeout(playTimer);
+    playIcon.innerHTML=PLAY_SVG;
+  }
+
+  function startPlay(){
+    isPlaying=true;
+    playIcon.innerHTML=PAUSE_SVG;
+    // If at last step, rewind first
+    if(+slider.value>=DATA.length-1){slider.value=0;onSlide();}
+    function step(){
+      var next=+slider.value+1;
+      if(next>=DATA.length){stopPlay();return;}
+      slider.value=next;
+      onSlide();
+      playTimer=setTimeout(step,900);
+    }
+    playTimer=setTimeout(step,600);
+  }
+
+  playBtn.addEventListener('click',function(){
+    if(isPlaying) stopPlay(); else startPlay();
+  });
+
+  // Entrance animation on scroll (runs once, silently)
+  var played=false;
+  var obs=new IntersectionObserver(function(entries){
+    if(played||!entries[0].isIntersecting)return;
+    played=true;
+    icons.forEach(function(ic,i){
+      ic.style.opacity='0';
+      setTimeout(function(){ic.style.opacity='1';},i*6);
+    });
+  },{threshold:0.25});
+  obs.observe(grid);
+
+  // Init display
+  yearNum.textContent=DATA[0].year;
+  yearEvent.textContent=DATA[0].event;
+  bigNum.textContent=DATA[0].val;
+  labelSpan.textContent=DATA[0].val+' de cada 100';
+  updateTrack(0);
+  updateTicks(0);
 })();
 
 // Effect 4: Re-animate hero stats on hover
