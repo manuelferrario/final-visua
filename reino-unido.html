@@ -85,7 +85,20 @@
     /* PICTOGRAM */
     .flourish-section{border-top:1px solid var(--hairline);background:var(--canvas)}
     .flourish-section .viz-text{border-bottom:none}
-    .flourish-embed-wrap{padding:0 24px 40px;max-width:960px;margin:0 auto}
+    .pictogram-scroll-layout{display:grid;grid-template-columns:1fr 360px;align-items:start;border-top:1px solid var(--hairline)}
+    .pictogram-sticky{position:sticky;top:92px;height:calc(100vh - 92px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:16px 24px;gap:18px;background:var(--canvas)}
+    .pict-header{display:flex;flex-direction:column;align-items:center;text-align:center}
+    .pict-year{font-family:var(--ffd);font-size:clamp(32px,3.6vw,48px);font-weight:700;line-height:1;color:var(--accent)}
+    .pict-total{font-size:13px;color:var(--muted);margin-top:4px}
+    .pictogram-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;width:100%;max-width:320px}
+    .pict-icon svg{width:100%;height:auto;display:block;fill:rgba(0,0,0,.10);transform:scale(1);transition:fill .45s cubic-bezier(.34,1.56,.64,1),transform .45s cubic-bezier(.34,1.56,.64,1)}
+    .pict-icon.on svg{fill:var(--accent);transform:scale(1.12)}
+    .pict-legend{font-size:11px;color:var(--muted);text-align:center}
+    .pictogram-panels{border-left:1px solid var(--hairline);background:var(--parch);position:relative}
+    .ppanel-reader{position:sticky;top:44px;height:calc(100vh - 44px);display:flex;flex-direction:column;justify-content:center;padding:40px 36px;background:var(--parch);z-index:2;transition:opacity 0.22s}
+    .ppanel{min-height:50vh;opacity:0;visibility:hidden;pointer-events:none}.ppanel.active{opacity:0}
+    .ppanel-year{font-family:var(--ffd);font-size:52px;font-weight:700;line-height:1;color:var(--accent);margin-bottom:14px}
+    .ppanel-body{font-size:14px;line-height:1.7;color:var(--muted)}
     /* DONUT */
     .donut-scroll-layout{display:grid;grid-template-columns:1fr 400px;align-items:start;border-top:1px solid var(--hairline)}
     .donut-sticky{position:sticky;top:92px;height:calc(100vh - 92px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px 40px;background:var(--canvas);gap:18px}
@@ -118,7 +131,7 @@
     .foot-nav a{font-size:12px;color:#0066cc;text-decoration:none;display:flex;align-items:center;gap:5px}.foot-nav a img{width:16px;border-radius:2px}.foot-nav a:hover{text-decoration:underline}
     .breadcrumb{animation:fu .55s .05s both}#hero h1{animation:fu .65s .15s both}#hero .hero-sub{animation:fu .65s .28s both}
     @keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-    @media(max-width:900px){.scroll-viz-layout,.donut-scroll-layout{grid-template-columns:1fr}.scroll-map-sticky,.donut-sticky{position:relative;top:0;height:auto;padding:32px 20px 16px}.scroll-panels,.donut-panels{border-left:none;border-top:1px solid var(--hairline)}.spanel,.dpanel{min-height:70vh}.counters-inner{grid-template-columns:1fr}.counter-item{border-right:none;border-bottom:1px solid #2a2a2a}}
+    @media(max-width:900px){.scroll-viz-layout,.donut-scroll-layout,.pictogram-scroll-layout{grid-template-columns:1fr}.scroll-map-sticky,.donut-sticky,.pictogram-sticky{position:relative;top:0;height:auto;padding:32px 20px 16px}.scroll-panels,.donut-panels,.pictogram-panels{border-left:none;border-top:1px solid var(--hairline)}.spanel,.dpanel,.ppanel{min-height:70vh}.counters-inner{grid-template-columns:1fr}.counter-item{border-right:none;border-bottom:1px solid #2a2a2a}}
     @media(max-width:640px){#hero-map-bg{width:80%;opacity:.6}}
     /* ── HOVER EFFECTS ── */
     .counter-item{transition:background 0.3s}
@@ -223,17 +236,48 @@
 </div></div>
 
 
-<!-- VIZ PICTOGRAMA FLOURISH -->
+<!-- VIZ PICTOGRAMA SCROLL-DRIVEN -->
 <div class="flourish-section">
   <div class="viz-text">
     <p class="eyebrow">Visualización 02 · Cruce del Canal</p>
     <h2 class="section-title">Llegadas irregulares por pequeñas embarcaciones</h2>
-    <p class="section-body">Cada figura representa personas que cruzaron el Canal en condiciones precarias. El crecimiento año a año es la historia de una política que no encuentra solución.</p>
+    <p class="section-body">Cada figura representa una fracción de las personas que cruzaron el Canal en condiciones precarias. Scrolleá para ver cómo crecieron año a año.</p>
   </div>
-  <div class="flourish-embed-wrap">
-    <div class="flourish-embed flourish-pictogram" data-src="visualisation/29322410" data-height="70vh">
-      <script src="https://public.flourish.studio/resources/embed.js"></script>
-      <noscript><img src="https://public.flourish.studio/visualisation/29322410/thumbnail" width="100%" alt="pictogram visualization"></noscript>
+  <div class="pictogram-scroll-layout">
+    <div class="pictogram-sticky">
+      <div class="pict-header">
+        <span class="pict-year" id="pict-year">2018</span>
+        <span class="pict-total" id="pict-total">299 personas</span>
+      </div>
+      <div class="pictogram-grid" id="pictogram-grid"></div>
+      <div class="pict-legend">Cada ícono ≈ 460 personas</div>
+    </div>
+    <div class="pictogram-panels">
+      <div class="ppanel-reader" id="ppanel-reader"></div>
+      <div class="ppanel active" data-frame="0" data-total="299" data-label="299 personas">
+        <div class="ppanel-year">2018</div>
+        <p class="ppanel-body">La ruta del Canal apenas existía como fenómeno: 299 personas cruzaron en pequeñas embarcaciones en todo el año. Un margen casi anecdótico de las llegadas totales.</p>
+      </div>
+      <div class="ppanel" data-frame="1" data-total="8466" data-label="8.466 personas">
+        <div class="ppanel-year">2020</div>
+        <p class="ppanel-body">En dos años el número se multiplicó por 28. La pandemia cerró otras rutas migratorias — y el Canal se volvió la alternativa para quienes no tenían otra forma de llegar.</p>
+      </div>
+      <div class="ppanel" data-frame="2" data-total="28526" data-label="28.526 personas">
+        <div class="ppanel-year">2021</div>
+        <p class="ppanel-body">La retirada occidental de Afganistán y la consolidación de redes de tráfico en Calais dispararon los cruces. El gobierno británico empieza a hablar de "crisis migratoria".</p>
+      </div>
+      <div class="ppanel" data-frame="3" data-total="45755" data-label="45.755 personas — récord histórico">
+        <div class="ppanel-year">2022</div>
+        <p class="ppanel-body">Pico histórico. Más de 45.000 personas cruzaron el Canal en botes inflables, muchas veces sobrecargados. El mismo año, el Reino Unido anuncia el Plan Rwanda para deportar solicitantes de asilo.</p>
+      </div>
+      <div class="ppanel" data-frame="4" data-total="29437" data-label="29.437 personas">
+        <div class="ppanel-year">2023</div>
+        <p class="ppanel-body">Una baja del 36% respecto al pico — pero lejos de resolver el problema. Nuevos acuerdos con Francia para patrullar playas reducen parcialmente los cruces.</p>
+      </div>
+      <div class="ppanel" data-frame="5" data-total="36816" data-label="36.816 personas">
+        <div class="ppanel-year">2024</div>
+        <p class="ppanel-body">Los cruces vuelven a subir. El Plan Rwanda es desactivado por el nuevo gobierno laborista. Casi una década después de los primeros cruces masivos, la ruta del Canal sigue sin una solución política.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -485,6 +529,50 @@ if(spReader&&document.querySelectorAll('.spanel').length)spReader.innerHTML=docu
 if(dpReader&&document.querySelectorAll('.dpanel').length)dpReader.innerHTML=document.querySelectorAll('.dpanel')[0].innerHTML;
 var dob=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)udot(+e.target.dataset.donut);});},{rootMargin:'-10% 0px -10% 0px',threshold:0});
 document.querySelectorAll('.dpanel').forEach(function(p){dob.observe(p);});
+// PICTOGRAM (cruce del Canal)
+(function(){
+  var grid=document.getElementById('pictogram-grid');
+  if(!grid) return;
+  var TOTAL_ICONS=100, MAX_VAL=45755;
+  var PERSON_SVG='<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>';
+  var icons=[];
+  for(var i=0;i<TOTAL_ICONS;i++){
+    var span=document.createElement('span');
+    span.className='pict-icon';
+    span.innerHTML=PERSON_SVG;
+    grid.appendChild(span);
+    icons.push(span);
+  }
+  function setPictogram(total,label,year){
+    var activeCount=Math.max(1,Math.round((total/MAX_VAL)*TOTAL_ICONS));
+    icons.forEach(function(icon,i){
+      icon.style.transitionDelay=(Math.min(i,activeCount)*4)+'ms';
+      icon.classList.toggle('on',i<activeCount);
+    });
+    document.getElementById('pict-year').textContent=year;
+    document.getElementById('pict-total').textContent=label;
+  }
+  var ppReader=document.getElementById('ppanel-reader');
+  function setPpReader(i){
+    var panels=document.querySelectorAll('.ppanel');
+    if(!panels[i]||!ppReader) return;
+    ppReader.style.opacity='0';
+    var html=panels[i].innerHTML;
+    setTimeout(function(){ppReader.innerHTML=html;ppReader.style.opacity='1';},180);
+  }
+  function pf(i){
+    var panels=document.querySelectorAll('.ppanel');
+    var p=panels[i];
+    if(!p) return;
+    setPictogram(+p.dataset.total,p.dataset.label,p.querySelector('.ppanel-year').textContent);
+    setPpReader(i);
+  }
+  if(ppReader&&document.querySelectorAll('.ppanel').length) ppReader.innerHTML=document.querySelectorAll('.ppanel')[0].innerHTML;
+  setPictogram(299,'299 personas','2018');
+  var ppo=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)pf(+e.target.dataset.frame);});},{rootMargin:'-10% 0px -10% 0px',threshold:0});
+  document.querySelectorAll('.ppanel').forEach(function(p){ppo.observe(p);});
+})();
+
 var progressBar=document.getElementById('scroll-progress');
 function updateProgress(){
   var docH=document.documentElement.scrollHeight-document.documentElement.clientHeight;
