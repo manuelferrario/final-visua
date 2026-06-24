@@ -526,11 +526,6 @@
     opacity:0; transition:opacity .5s;
   }
   #globe-country-badge.visible { opacity:1; }
-  #gcb-flag {
-    width:52px; height:auto; border-radius:5px;
-    margin:0 auto 10px; display:block;
-    box-shadow:0 3px 16px rgba(0,0,0,.32), 0 1px 4px rgba(0,0,0,.18);
-  }
   #gcb-name {
     font-family:var(--ff-d); font-size:clamp(22px,2.8vw,32px);
     font-weight:700; color:#fff; line-height:1;
@@ -626,7 +621,6 @@
       <div id="globe-ui">
         <div id="globe-title">Orígenes de la inmigración · Europa Occidental</div>
         <div id="globe-country-badge">
-          <img id="gcb-flag" src="" alt="">
           <div id="gcb-name"></div>
           <div id="gcb-num"></div>
         </div>
@@ -750,7 +744,7 @@
   /* ══ DATA ══ */
   var DATA = {
     de: {
-      dest: [10.45, 51.16], flag:'de', name:'Alemania', total:'13,5 M', color:'#e8a84a',
+      dest: [10.45, 51.16], iso:'276', flag:'de', name:'Alemania', total:'13,5 M', color:'#e8a84a',
       flows:[
         {country:'Polonia',       lat:52.0, lon:20.0,  val:1523000, share:10.46, cont:'Europe'},
         {country:'Turquía',       lat:39.0, lon:35.0,  val:1472000, share:10.11, cont:'Asia'},
@@ -775,7 +769,7 @@
       ]
     },
     fr: {
-      dest: [2.35, 48.85], flag:'fr', name:'Francia', total:'5,5 M', color:'#6e9bc8',
+      dest: [2.35, 48.85], iso:'250', flag:'fr', name:'Francia', total:'5,5 M', color:'#6e9bc8',
       flows:[
         {country:'Argelia',       lat:28.0, lon:2.6,   val:1004220, share:12.6, cont:'Africa'},
         {country:'Marruecos',     lat:31.8, lon:-7.1,  val:932490,  share:11.7, cont:'Africa'},
@@ -800,7 +794,7 @@
       ]
     },
     uk: {
-      dest: [-0.12, 51.50], flag:'gb', name:'Reino Unido', total:'7,7 M', color:'#c86e7a',
+      dest: [-0.12, 51.50], iso:'826', flag:'gb', name:'Reino Unido', total:'7,7 M', color:'#c86e7a',
       flows:[
         {country:'India',         lat:20.6, lon:79.0,  val:965000,  share:9.02, cont:'Asia'},
         {country:'Polonia',       lat:52.0, lon:20.0,  val:841000,  share:7.86, cont:'Europe'},
@@ -1012,6 +1006,23 @@
     ctx.strokeStyle='rgba(160,160,150,0.30)'; ctx.lineWidth=0.5;
     ctx.fill(); ctx.stroke();
 
+    // Highlight the active country's territory
+    if(currentCountry && geoData && geoData.features){
+      var hd = DATA[currentCountry];
+      var feature = geoData.features.find(function(f){ return f.id === hd.iso; });
+      if(feature){
+        ctx.beginPath(); path(feature);
+        ctx.fillStyle = hd.color;
+        ctx.globalAlpha = state.arcAlpha * 0.55;
+        ctx.fill();
+        ctx.strokeStyle = hd.color;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = state.arcAlpha;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+
     // Destination dots (always show the 3 countries)
     ['de','fr','uk'].forEach(function(c){
       var d = DATA[c];
@@ -1068,7 +1079,6 @@
       // Badge
       if(sc.badge && c){
         var d = DATA[c];
-        document.getElementById('gcb-flag').src = 'https://flagcdn.com/w80/'+d.flag+'.png';
         document.getElementById('gcb-name').textContent = d.name;
         document.getElementById('gcb-num').textContent  = d.total+' residentes extranjeros';
         document.getElementById('gcb-num').style.color  = d.color;
