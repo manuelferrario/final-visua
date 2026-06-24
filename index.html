@@ -210,63 +210,14 @@
 
     /* ── GALERÍA SCROLL-DRIVEN ── */
     #galeria {
-      background: #0a0a0a;
+      background: #ffffff;
     }
-
-    /* Chapter break separator */
-    .chapter-break {
-      padding: 56px 0 72px;
+    .gallery-header {
+      padding: 88px 24px 72px;
     }
-    .cb-rule {
-      width: 100%;
-      height: 1px;
-      background: rgba(255,255,255,0.10);
-      margin-bottom: 52px;
-    }
-    .cb-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      align-items: flex-end;
-      gap: 40px;
-    }
-    .cb-num {
-      font-family: var(--ff-d);
-      font-size: clamp(72px, 11vw, 140px);
-      font-weight: 700;
-      line-height: 0.85;
-      letter-spacing: -4px;
-      color: rgba(255,255,255,0.06);
-      flex-shrink: 0;
-      user-select: none;
-    }
-    .cb-text { flex: 1; }
-    .cb-eyebrow {
-      font-family: var(--ff-t);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.32);
-      margin-bottom: 14px;
-    }
-    .cb-title {
-      font-family: var(--ff-d);
-      font-size: clamp(28px, 4.5vw, 56px);
-      font-weight: 600;
-      line-height: 1.05;
-      letter-spacing: -0.4px;
-      color: #fff;
-      margin-bottom: 18px;
-    }
-    .cb-body {
-      font-family: var(--ff-t);
-      font-size: 15px;
-      line-height: 1.65;
-      color: rgba(255,255,255,0.48);
-      max-width: 500px;
-    }
+    .gallery-header .eyebrow { color: var(--ink-muted-48); }
+    .gallery-header .section-title { color: var(--ink); }
+    .gallery-header .section-body  { color: var(--ink-muted-48); }
 
     #gallery-scroll {
       position: relative;
@@ -632,11 +583,11 @@
 
   #globe-source { text-align:center; padding:48px 24px; font-size:11px; color:rgba(0,0,0,.35); letter-spacing:.04em; }
 
-  /* Fade to dark at bottom of globe section */
+  /* Fade to white at bottom of globe section */
   #globe-section::after {
     content:''; display:block;
-    height:100px;
-    background: linear-gradient(to bottom, transparent, #0a0a0a);
+    height:120px;
+    background: linear-gradient(to bottom, transparent, #ffffff);
     margin-top:-1px;
   }
 
@@ -1162,16 +1113,12 @@
 
   <!-- ── GALERÍA / CARRUSEL ── -->
   <section id="galeria">
-    <div class="chapter-break fade-up">
-      <div class="cb-rule"></div>
-      <div class="cb-inner">
-        <span class="cb-num">02</span>
-        <div class="cb-text">
-          <p class="cb-eyebrow">Impacto en imágenes</p>
-          <h2 class="cb-title">Una migración<br>que transforma</h2>
-          <p class="cb-body">Cómo la llegada masiva de solicitantes de asilo reconfiguró la vida cotidiana, las políticas públicas y los debates sociales en tres países.</p>
-        </div>
-      </div>
+    <div class="gallery-header section-inner fade-up">
+      <p class="eyebrow">Impacto en imágenes</p>
+      <h2 class="section-title">Una migración que transforma</h2>
+      <p class="section-body">
+        Cómo la llegada masiva de solicitantes de asilo reconfiguró la vida cotidiana, las políticas públicas y los debates sociales en tres países.
+      </p>
     </div>
 
     <div id="gallery-scroll">
