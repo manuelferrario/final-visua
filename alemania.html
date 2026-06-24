@@ -19,6 +19,7 @@
     html{scroll-behavior:smooth}
     body{background:var(--canvas);color:var(--ink);font-family:var(--fft);font-size:17px;line-height:1.47;-webkit-font-smoothing:antialiased}
     /* NAV */
+    #scroll-progress{position:fixed;top:0;left:0;height:2.5px;width:0%;background:var(--accent);z-index:300;transition:width .1s linear}
     nav.top-nav{position:sticky;top:0;z-index:200;background:var(--black);height:44px;display:flex;align-items:center;padding:0 22px}
     .nav-inner{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
     .nav-back{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(255,255,255,.65);text-decoration:none;transition:color .15s}
@@ -167,6 +168,8 @@
   </style>
 </head>
 <body>
+
+<div id="scroll-progress"></div>
 
 <nav class="top-nav"><div class="nav-inner">
   <a href="index.html" class="nav-back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 8H3M7 4L3 8l4 4"/></svg>Inicio</a>
@@ -749,6 +752,16 @@ if(spReader&&document.querySelectorAll('.spanel').length)spReader.innerHTML=docu
 if(dpReader&&document.querySelectorAll('.dpanel').length)dpReader.innerHTML=document.querySelectorAll('.dpanel')[0].innerHTML;
 var dob=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)udot(+e.target.dataset.donut);});},{rootMargin:'-10% 0px -10% 0px',threshold:0});
 document.querySelectorAll('.dpanel').forEach(function(p){dob.observe(p);});
+// Scroll progress bar
+var progressBar=document.getElementById('scroll-progress');
+function updateProgress(){
+  var docH=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  var pct=docH>0?(window.scrollY/docH)*100:0;
+  if(progressBar)progressBar.style.width=pct+'%';
+}
+window.addEventListener('scroll',updateProgress,{passive:true});
+updateProgress();
+
 // Parallax + stats
 var fi=document.querySelector('.hero-flag-wrap');
 window.addEventListener('scroll',function(){if(fi)fi.style.transform='translateY('+(window.scrollY*0.12)+'px)';},{passive:true});

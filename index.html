@@ -120,9 +120,13 @@
       letter-spacing: 0; color: var(--ink-muted-48);
       text-decoration: none;
       opacity: 0;
-      animation: heroUp 0.7s ease 0.9s forwards, bounce 2.6s ease-in-out 1.6s infinite;
+      animation: heroUpCentered 0.7s ease 0.9s forwards, bounce 2.6s ease-in-out 1.6s infinite;
     }
     .scroll-cue svg { width: 18px; height: 18px; }
+    @keyframes heroUpCentered {
+      from { opacity: 0; transform: translateX(-50%) translateY(22px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
     @keyframes bounce {
       0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
       50%       { transform: translateX(-50%) translateY(7px); opacity: 1; }
@@ -457,9 +461,19 @@
       #hero h1 { font-size: 40px; }
       .slide-content { padding: 20px 22px; }
     }
+
+    #scroll-progress {
+      position: fixed; top: 0; left: 0;
+      height: 2.5px; width: 0%;
+      background: var(--primary);
+      z-index: 300;
+      transition: width .1s linear;
+    }
   </style>
 </head>
 <body>
+
+  <div id="scroll-progress"></div>
 
   <!-- ── HERO ── -->
   <section id="hero">
@@ -1282,6 +1296,19 @@
   </section>
 
   <div id="tooltip"></div>
+
+  <script>
+    (function(){
+      var progressBar = document.getElementById('scroll-progress');
+      function updateProgress(){
+        var docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+        if (progressBar) progressBar.style.width = pct + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    })();
+  </script>
 
   <script>
     /* ── DATA ── */
