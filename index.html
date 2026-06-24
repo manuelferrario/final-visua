@@ -411,18 +411,18 @@
     }
     .cc-num {
       font-family: var(--ff-t); font-size: 11px;
-      letter-spacing: 0.04em; text-transform: uppercase;
-      color: var(--ink-muted-48);
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--ink-muted-48); font-variant-numeric: tabular-nums;
     }
 
     .cc-name {
       font-family: var(--ff-d); font-size: 28px; font-weight: 600;
-      line-height: 1.05; letter-spacing: -0.28px; color: var(--ink);
+      line-height: 1.07; letter-spacing: -0.374px; color: var(--ink);
       margin-bottom: 10px;
     }
     .cc-desc {
-      font-family: var(--ff-t); font-size: 13px; font-weight: 400;
-      line-height: 1.55; letter-spacing: -0.1px;
+      font-family: var(--ff-t); font-size: 14px; font-weight: 400;
+      line-height: 1.5; letter-spacing: -0.15px;
       color: var(--ink-muted-48); margin-bottom: 20px; flex: 1;
     }
 
@@ -1228,7 +1228,7 @@
 
         <!-- ALEMANIA -->
         <a href="alemania.html" class="country-card fade-up" data-delay="1" style="--card-accent:#e8894d">
-          <div class="cc-accent" style="background:#4a6fa5"></div>
+          <div class="cc-accent" style="background:#e8894d"></div>
           <div class="cc-body">
             <div class="cc-top">
               <span class="cc-flag"><img src="https://flagcdn.com/w80/de.png" alt="Alemania" /></span>
@@ -1239,7 +1239,7 @@
             <div class="cc-spark" id="spark-de"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#4a6fa5" data-target="2400000" data-suffix="">2,4 M</div>
+                <div class="cc-stat-num" style="color:#e8894d" data-target="2400000" data-suffix="">2,4 M</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -1253,7 +1253,7 @@
 
         <!-- FRANCIA -->
         <a href="francia.html" class="country-card fade-up" data-delay="2" style="--card-accent:#4a82c4">
-          <div class="cc-accent" style="background:#7a9e7e"></div>
+          <div class="cc-accent" style="background:#4a82c4"></div>
           <div class="cc-body">
             <div class="cc-top">
               <span class="cc-flag"><img src="https://flagcdn.com/w80/fr.png" alt="Francia" /></span>
@@ -1264,7 +1264,7 @@
             <div class="cc-spark" id="spark-fr"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#7a9e7e" data-target="525000" data-suffix="">525 K</div>
+                <div class="cc-stat-num" style="color:#4a82c4" data-target="525000" data-suffix="">525 K</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -1278,7 +1278,7 @@
 
         <!-- REINO UNIDO -->
         <a href="reino-unido.html" class="country-card fade-up" data-delay="3" style="--card-accent:#c45a5a">
-          <div class="cc-accent" style="background:#c47b4a"></div>
+          <div class="cc-accent" style="background:#c45a5a"></div>
           <div class="cc-body">
             <div class="cc-top">
               <span class="cc-flag"><img src="https://flagcdn.com/w80/gb.png" alt="Reino Unido" /></span>
@@ -1289,7 +1289,7 @@
             <div class="cc-spark" id="spark-uk"></div>
             <div class="cc-bottom">
               <div>
-                <div class="cc-stat-num" style="color:#c47b4a" data-target="323000" data-suffix="">323 K</div>
+                <div class="cc-stat-num" style="color:#c45a5a" data-target="323000" data-suffix="">323 K</div>
                 <div class="cc-stat-label">solicitudes acumuladas · 2008–2024</div>
               </div>
               <span class="cc-cta">Explorar
@@ -1343,9 +1343,9 @@
     ];
 
     const series = [
-      { key: 'de', label: 'Alemania',    color: '#4a6fa5' },
-      { key: 'fr', label: 'Francia',     color: '#7a9e7e' },
-      { key: 'uk', label: 'Reino Unido', color: '#c47b4a' },
+      { key: 'de', label: 'Alemania',    color: '#e8894d' },
+      { key: 'fr', label: 'Francia',     color: '#4a82c4' },
+      { key: 'uk', label: 'Reino Unido', color: '#c45a5a' },
     ];
 
     const fmt  = d3.format(',');
@@ -1423,10 +1423,10 @@
       const peak = data.find(d => d.year === 2016);
       const px = xScale(2016), py = yScale(peak.de);
       g.append('circle').attr('cx',px).attr('cy',py).attr('r',4)
-        .attr('fill','#4a6fa5').attr('stroke','#fff').attr('stroke-width',1.5);
+        .attr('fill','#e8894d').attr('stroke','#fff').attr('stroke-width',1.5);
       g.append('text')
         .attr('x', px - 4).attr('y', py - 10)
-        .attr('text-anchor','end').attr('fill','#4a6fa5')
+        .attr('text-anchor','end').attr('fill','#e8894d')
         .style('font-size','11px').style('font-weight','600')
         .text('587K');
 
@@ -1617,9 +1617,9 @@
 
     /* ── INIT ── */
     drawChart();
-    drawSpark('spark-de', 'de', '#4a6fa5');
-    drawSpark('spark-fr', 'fr', '#7a9e7e');
-    drawSpark('spark-uk', 'uk', '#c47b4a');
+    drawSpark('spark-de', 'de', '#e8894d');
+    drawSpark('spark-fr', 'fr', '#4a82c4');
+    drawSpark('spark-uk', 'uk', '#c45a5a');
     startAuto();
 
     window.addEventListener('resize', () => {
@@ -1627,9 +1627,9 @@
       ['spark-de','spark-fr','spark-uk'].forEach(id => {
         document.getElementById(id).innerHTML = '';
       });
-      drawSpark('spark-de', 'de', '#4a6fa5');
-      drawSpark('spark-fr', 'fr', '#7a9e7e');
-      drawSpark('spark-uk', 'uk', '#c47b4a');
+      drawSpark('spark-de', 'de', '#e8894d');
+      drawSpark('spark-fr', 'fr', '#4a82c4');
+      drawSpark('spark-uk', 'uk', '#c45a5a');
     });
   </script>
 </body>
